@@ -1,5 +1,6 @@
-import db from "@/config/db";
+import connectToDatabase from "@/config/db";
 import { NextResponse } from "next/server";
+const db = connectToDatabase();
 
 export async function GET(req) {
   const url = new URL(req.url);

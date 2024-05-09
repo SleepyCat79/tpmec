@@ -1,97 +1,77 @@
 "use client";
 import "./order_management.css";
-import { useState } from "react";
-export default function () {
+import { useState, useEffect } from "react";
+export default function ({ params }) {
   const [order, setOrder] = useState([]);
-  const array = [
-    {
-      orderNumber: "1",
-      orderID: "1",
-      totalPrice: "1000",
-      userName: "user1",
-      date: "2021-09-01",
-      status: "Completed",
-    },
-    {
-      orderNumber: "2",
-      orderID: "2",
-      totalPrice: "2000",
-      userName: "user2",
-      date: "2021-09-02",
-      status: "Shipping",
-    },
-    {
-      orderNumber: "3",
-      orderID: "3",
-      totalPrice: "3000",
-      userName: "user3",
-      date: "2021-09-03",
-      status: "Packaging",
-    },
-    {
-      orderNumber: "4",
-      orderID: "4",
-      totalPrice: "4000",
-      userName: "user4",
-      date: "2021-09-04",
-      status: "Completed",
-    },
-    {
-      orderNumber: "5",
-      orderID: "5",
-      totalPrice: "5000",
-      userName: "user5",
-      date: "2021-09-05",
-      status: "Shipping",
-    },
-    {
-      orderNumber: "6",
-      orderID: "6",
-      totalPrice: "6000",
-      userName: "user6",
-      date: "2021-09-06",
-      date: "2021-09-03",
-      status: "Packaging",
-    },
-    {
-      orderNumber: "7",
-      orderID: "7",
-      totalPrice: "7000",
-      userName: "user7",
-      date: "2021-09-07",
-      date: "2021-09-03",
-      status: "Packaging",
-    },
-    {
-      orderNumber: "8",
-      orderID: "8",
-      totalPrice: "8000",
-      userName: "user8",
-      date: "2021-09-08",
-      status: "Shipping",
-    },
-    {
-      orderNumber: "9",
-      orderID: "9",
-      totalPrice: "9000",
-      userName: "user9",
-      date: "2021-09-09",
-      status: "Shipping",
-    },
-    {
-      orderNumber: "10",
-      orderID: "10",
-      totalPrice: "10000",
-      userName: "user10",
-      date: "2021-09-10",
-      status: "Shipping",
-    },
-  ];
+  const [indexUpdate, setIndexUpdate] = useState(-1);
+  const seller_id = params.seller_id_encode;
+  async function fetchData() {
+    const response = await fetch(`/api/seller/orders?seller_id=${seller_id}`);
+    const data = await response.json();
+    console.log(data);
+    setOrder(data);
+  }
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    console.log(order);
+  }, [order]);
+
+  async function onClick(index) {
+    if (indexUpdate === index) {
+      //save
+      const data = {
+        Order_ID: order[index].Order_ID,
+        Status: order[index].Status,
+        Expected_delivery_date: new Date(order[index].Expected_delivery_date)
+          .toISOString()
+          .split("T")[0],
+      };
+      console.log(data);
+      const response = await fetch("/api/seller/order", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+      if (response.ok) {
+        alert("Update successfully");
+      } else {
+        await fetchData();
+        alert("Update failed");
+      }
+      setIndexUpdate(-1);
+    } else {
+      //edit
+      console.log("Edit");
+      setIndexUpdate(index);
+    }
+  }
+
+  function handleChangeState(event, index) {
+    const newOrder = [...order];
+    newOrder[index].Status = event.target.value;
+    setOrder(newOrder);
+  }
+
+  function handleChangeDateExpected(event, index) {
+    const newOrder = [...order];
+    newOrder[index].Expected_delivery_date = event.target.value;
+    setOrder(newOrder);
+  }
+  function handleChangeDateCreation(event, index) {
+    const newOrder = [...order];
+    newOrder[index].Order_date = event.target.value;
+    setOrder(newOrder);
+  }
   return (
     <div className="order_management_seller_container">
       <div className="order_management_seller">
         <h3>Order Management</h3>
-        <div className="order_management_seller_filter_container">
+        {/* <div className="order_management_seller_filter_container">
           <div>
             <label>From</label>
             <input type="date" />
@@ -113,7 +93,7 @@ export default function () {
           </div>
           <button>Apply</button>
           <button>Reset</button>
-        </div>
+        </div> */}
         <div className="table_order_seller">
           <table>
             <thead>
@@ -122,35 +102,79 @@ export default function () {
                 <th>Order ID</th>
                 <th>Status</th>
                 <th>Total Price</th>
-                <th>User Name</th>
-                <th>Date</th>
+                <th>Creation Date</th>
+                <th>Expected Date</th>
                 <th>Action</th>
               </tr>
             </thead>
             <tbody>
-              {array.map((item) => (
+              {order.map((item, index) => (
                 <tr>
-                  <td>{item.orderNumber}</td>
-                  <td>{item.orderID}</td>
+                  <td>{index + 1}</td>
+                  <td>{item.Order_ID}</td>
                   <td
                     style={{
                       color:
-                        item.status === "Completed"
+                        item.Status === "Complete"
                           ? "green"
-                          : item.status === "Packaging"
+                          : item.Status === "Packaging"
                           ? "orange"
-                          : item.status === "Shipping"
+                          : item.Status === "Shipping"
                           ? "blue"
                           : "black",
                     }}
                   >
-                    {item.status}
+                    {indexUpdate === index ? (
+                      <select
+                        value={order[index].Status}
+                        onChange={(e) => handleChangeState(e, index)}
+                      >
+                        <option value="Complete">Complete</option>
+                        <option value="Packaging">Packaging</option>
+                        <option value="Shipping">Shipping</option>
+                        <option value="waiting confirmation">
+                          waiting confirmation
+                        </option>
+                      </select>
+                    ) : (
+                      item.Status
+                    )}
                   </td>
-                  <td>{item.totalPrice}</td>
-                  <td>{item.userName}</td>
-                  <td>{item.date}</td>
+                  <td>{item.Total_price}</td>
                   <td>
-                    <button>View</button>
+                    {indexUpdate === index ? (
+                      <input
+                        type="Date"
+                        value={
+                          new Date(order[index].Order_date)
+                            .toISOString()
+                            .split("T")[0]
+                        }
+                        onChange={(e) => handleChangeDateCreation(e, index)}
+                      />
+                    ) : (
+                      new Date(item.Order_date).toLocaleDateString()
+                    )}
+                  </td>
+                  <td>
+                    {indexUpdate === index ? (
+                      <input
+                        type="Date"
+                        value={
+                          new Date(order[index].Expected_delivery_date)
+                            .toISOString()
+                            .split("T")[0]
+                        }
+                        onChange={(e) => handleChangeDateExpected(e, index)}
+                      />
+                    ) : (
+                      new Date(item.Expected_delivery_date).toLocaleDateString()
+                    )}
+                  </td>
+                  <td>
+                    <button onClick={() => onClick(index)}>
+                      {indexUpdate === index ? "Save" : "Edit"}
+                    </button>
                   </td>
                 </tr>
               ))}

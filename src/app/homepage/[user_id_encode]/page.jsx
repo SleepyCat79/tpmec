@@ -170,7 +170,7 @@ export default function Page({ params }) {
           </button>
         </div>
       </div>
-      <div className="best_seller_container">
+      {/* <div className="best_seller_container">
         <p className="best_seller_title">割引商品</p>
         <div className="big_best_seller_container">
           <button
@@ -212,8 +212,8 @@ export default function Page({ params }) {
             />
           </button>
         </div>
-      </div>
-      <div className="category_container">
+      </div> */}
+      {/* <div className="category_container">
         <p className="category_title">Shop by category</p>
         <div className="category_list">
           <CategoryCart
@@ -253,7 +253,7 @@ export default function Page({ params }) {
             userID={user_id}
           />
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }

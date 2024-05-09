@@ -72,8 +72,8 @@ export default function ({ params }) {
       // Send rows to the separate API endpoint
       console.log("Rows:", rows);
 
-      const rowData = await rowRes.json();
-      console.log(rowData);
+      const rowRes = await res.json();
+      console.log(rowRes);
 
       // Move this fetch request inside the try block
     } catch (error) {

@@ -1,5 +1,6 @@
-import db from "@/config/db";
+import connectToDatabase from "@/config/db";
 import { NextResponse } from "next/server";
+const db = connectToDatabase();
 
 /// Get all order of seller
 export async function GET(req) {
@@ -12,7 +13,7 @@ export async function GET(req) {
       if (err) {
         reject(err);
       }
-      resolve(NextResponse.json(result[0]));
+      resolve(NextResponse.json(result));
     });
   });
 }
