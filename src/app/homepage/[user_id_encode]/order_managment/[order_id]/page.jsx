@@ -4,11 +4,32 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 
 export default function CheckoutPage({ params }) {
+  const user_id_encode = params.user_id_encode;
   const [orderDetails, setOrderDetails] = useState(null);
   const path = window.location.pathname;
   const pathParts = path.split("/");
   const Order_ID = pathParts[pathParts.length - 1];
+  const [user_information, setUserInformation] = useState({
+    user_name: "",
+    user_phone: "",
+    user_address: [],
+  });
   useEffect(() => {
+    async function fetchUserInformation() {
+      const response = await fetch(
+        `/api/user/information?user_id=${encodeURIComponent(user_id_encode)}`
+      );
+      if (response.ok) {
+        const data = await response.json();
+        setUserInformation({
+          user_name: data.user.FName + " " + data.user.LName,
+          user_phone: data.user.Phone_Number,
+          user_address: data.address.map((item) => item.Address),
+        });
+      } else {
+        console.error("Error:", response.statusText);
+      }
+    }
     fetch(`/api/user/order?order_id=${Order_ID}`)
       .then((response) => response.json())
       .then((data) => {
@@ -32,16 +53,8 @@ export default function CheckoutPage({ params }) {
         });
       })
       .catch((error) => console.error(error));
+    fetchUserInformation();
   }, [Order_ID]);
-
-  const user_information = {
-    user_name: "Nguyen Viet Hung",
-    user_phone: "0798944343",
-    user_address: [
-      "13/19 , Khu Phố 6, Phường Tam Hiệp, Phường Tam Hiệp, Thành Phố Biên Hòa, Đồng Nai",
-      "79/38A tổ 21 khu phố 1 phường Tân Hiệp Biên Hoà Dồng Nai Việt Nam",
-    ],
-  };
 
   function calculateTotalPrice() {
     let total = 0;

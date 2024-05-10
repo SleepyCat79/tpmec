@@ -14,14 +14,16 @@ export async function GET(req) {
         console.log(err);
         resolve(NextResponse.error(err));
       } else {
-        const groupedResult = result[0].reduce((acc, item) => {
-          if (!acc[item.Seller_ID]) {
-            acc[item.Seller_ID] = [];
+        const cart = [];
+        const checkout = [];
+        result[0].forEach((item) => {
+          if (item.isChecked === 0) {
+            cart.push(item);
+          } else if (item.isChecked === 1) {
+            checkout.push(item);
           }
-          acc[item.Seller_ID].push(item);
-          return acc;
-        }, {});
-        resolve(NextResponse.json(groupedResult));
+        });
+        resolve(NextResponse.json({ cart, checkout }));
       }
     });
   });
@@ -63,15 +65,24 @@ export async function DELETE(req) {
 //update quantity of product in cart
 export async function PUT(req) {
   const data = await req.json();
-  const { product_id, user_id, option_number, quantity } = data;
-  const sql = `call Update_Cart_Quantity(${product_id},'${user_id}',${option_number},${quantity})`;
+  const { operation, product_id, user_id, option_number, quantity, isChecked } =
+    data;
+
+  let sql;
+  if (operation === "updateQuantity") {
+    sql = `call Update_Cart_Quantity(${product_id},'${user_id}',${option_number},${quantity})`;
+  } else if (operation === "updateIsChecked") {
+    // Replace with your actual SQL query to update isChecked
+    sql = `UPDATE USER_CART SET IsChecked = ${isChecked} WHERE Product_ID = ${product_id} AND User_ID = '${user_id}' AND Option_Number = ${option_number}`;
+  }
+
   return new Promise((resolve, reject) => {
     db.query(sql, (err, result) => {
       if (err) {
         console.log(err);
         resolve(NextResponse.error(err));
       } else {
-        resolve(NextResponse.json({ message: "Updated quantity" }));
+        resolve(NextResponse.json({ message: "Operation successful" }));
       }
     });
   });

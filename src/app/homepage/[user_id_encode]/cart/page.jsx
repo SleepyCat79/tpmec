@@ -15,18 +15,19 @@ export default function Page({ params }) {
       );
       if (response.ok) {
         const data = await response.json();
-        const shops = Object.keys(data).map((sellerId) => {
-          return {
-            sellerId,
-            check: false,
-            product: data[sellerId].map((item) => ({
+        console.log(data);
+        const cartShops = data.cart.map((item) => ({
+          sellerId: item.Seller_ID,
+          check: false,
+          product: [
+            {
               ...item,
               check: false,
               total: item.Quantity * parseFloat(item.Option_price),
-            })),
-          };
-        });
-        setCart({ shop: shops });
+            },
+          ],
+        }));
+        setCart({ shop: cartShops });
       } else {
         console.error("Error:", response.statusText);
       }
@@ -78,6 +79,7 @@ export default function Page({ params }) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
+        operation: "updateQuantity",
         product_id: new_cart.shop[shopIndex].product[productIndex].Product_ID,
         user_id: user_id_encode, // replace with actual user_id
         option_number:
@@ -107,6 +109,7 @@ export default function Page({ params }) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
+        operation: "updateQuantity",
         product_id: new_cart.shop[shopIndex].product[productIndex].Product_ID,
         user_id: user_id_encode, // replace with actual user_id
         option_number:
@@ -232,7 +235,7 @@ export default function Page({ params }) {
     for (let shop of new_cart.shop) {
       let Product_list = [];
       let Seller_ID = null;
-      shop.product.forEach((product) => {
+      shop.product.forEach(async (product) => {
         if (product.check) {
           if (!Seller_ID) Seller_ID = product.Seller_ID;
           Product_list.push({
@@ -243,33 +246,38 @@ export default function Page({ params }) {
             Original_price: product.Option_price,
             Final_price: product.Option_price * product.Quantity,
           });
+
+          const data = {
+            Seller_ID, // Seller_ID is obtained from the first checked product
+            Customer_ID: user_id, // Replace with actual Customer_ID
+            Address: "your_address", // Replace with actual Address
+            Shipping_company: "your_shipping_company", // Replace with actual Shipping_company
+            Total_quantity: Product_list.length,
+            Product_list,
+          };
+
+          // Make API request to server
+          const response = await fetch("/api/user/cart", {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              operation: "updateIsChecked",
+              product_id: product.Product_ID,
+              user_id: user_id,
+              option_number: product.Option_number,
+              isChecked: product.check,
+              ...data,
+            }),
+          });
+
+          if (!response.ok) {
+            alert("Checkout failed");
+            return;
+          }
         }
       });
-
-      if (Product_list.length > 0) {
-        const data = {
-          Seller_ID, // Seller_ID is obtained from the first checked product
-          Customer_ID: user_id, // Replace with actual Customer_ID
-          Address: "your_address", // Replace with actual Address
-          Shipping_company: "your_shipping_company", // Replace with actual Shipping_company
-          Total_quantity: Product_list.length,
-          Product_list,
-        };
-
-        // Make API request to server
-        const response = await fetch("/api/user/order", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(data),
-        });
-
-        if (!response.ok) {
-          alert("Checkout failed");
-          return;
-        }
-      }
     }
 
     // Redirect to checkout page

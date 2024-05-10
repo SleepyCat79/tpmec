@@ -97,6 +97,8 @@ CREATE TABLE ORDER_ITEM(
         Final_price DECIMAL(10,2)
 );
 
+
+
 CREATE TABLE SHIPPING_COMPANY (
 		Seller_ID varchar(255),
         Company_name varchar(255) ,

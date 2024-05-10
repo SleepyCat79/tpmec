@@ -46,10 +46,12 @@ export default function Page({ params }) {
       .then((response) => response.json())
       .then((data) => {
         // transform the data into the format you need
+
+        console.log(data);
         const transformedData = data.map((item) => ({
           productImg: item.First_Image,
           sellerImg: "/user_icon.png", // replace with actual data if available
-          sellerName: item.Seller_ID, // replace with actual data if available
+          sellerName: item.Shop_name, // replace with actual data if available
           productName: item.Product_title,
           location: "北海道日高地方", // replace with actual data if available
           price: item.First_Option_Price,
