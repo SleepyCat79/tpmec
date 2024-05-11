@@ -6,12 +6,13 @@
   margin: 10px;
   border: 1px solid #000;
   border-radius: 10px;
-  width: 200px;
-  height: 300px;
+  width: 220px;
+  height: 330px;
   row-gap: 10px;
   flex: 0 0 auto;
   margin-left: 30px;
   position: relative;
+  overflow: hidden;
 }
 .product_cart_container p {
   margin: 0;
@@ -89,7 +90,7 @@
   font-weight: 600;
 }
 .product_name_cart {
-  font-size: 18px;
+  font-size: 14px;
   font-weight: bold;
 }
 .price_container_cart div:last-child {

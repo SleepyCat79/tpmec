@@ -16,8 +16,9 @@ export default function ({ params }) {
   const [productname, setProductname] = useState("");
   const [description, setDescription] = useState("");
   const [selectedFiles, setSelectedFiles] = useState([]);
-
+  const [isWaiting, setIsWaiting] = useState(false);
   const submitproduct = async (e) => {
+    setIsWaiting(true);
     console.log("Called");
     try {
       // Upload files to S3 and get their URLs
@@ -74,17 +75,23 @@ export default function ({ params }) {
 
       const rowRes = await res.json();
       console.log(rowRes);
+      if (res.ok) {
+        alert("Product uploaded successfully");
+        setIsWaiting(false);
+      }
 
       // Move this fetch request inside the try block
     } catch (error) {
       console.error("Error:", error);
+      alert("Error uploading product");
     }
   };
 
   const handleImageChange = (e) => {
-    setSelectedFiles(Array.from(e.target.files));
-    const files = Array.from(e.target.files);
-    const fileReaders = files.map((file) => {
+    const newSelectedFiles = Array.from(e.target.files);
+    setSelectedFiles((prevFiles) => [...prevFiles, ...newSelectedFiles]);
+
+    const fileReaders = newSelectedFiles.map((file) => {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onloadend = () => resolve(reader.result);
@@ -101,6 +108,7 @@ export default function ({ params }) {
         console.error("Error reading files:", error);
       });
   };
+
   const addRow = () => {
     setRows([...rows, { optionPrice: "", optionName: "" }]);
   };
@@ -203,6 +211,7 @@ export default function ({ params }) {
           </div>
         </div>
         <div className="submit_button">
+          {isWaiting && <p>Posting Product...</p>}
           <button onClick={() => submitproduct()}>Posting</button>
         </div>
       </div>
