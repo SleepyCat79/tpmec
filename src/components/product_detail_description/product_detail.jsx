@@ -42,6 +42,7 @@ export default function Product_detail_description({ user_id, product_id }) {
       option_number: index_option,
       quantity: quantity,
     };
+    console.log(data);
 
     const response = await fetch("/api/user/cart", {
       method: "POST",

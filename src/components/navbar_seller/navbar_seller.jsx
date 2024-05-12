@@ -60,7 +60,15 @@ export default function NavbarSeller({ user_id_encode, seller_id_encode }) {
   }
   return (
     <div className="Navbar_user_left_container">
-      <h1>TPM</h1>
+      <div className="left_section_navbar_container">
+        <button
+          onClick={() =>
+            router.push(`/homepage/${encodeURIComponent(user_id_encode)}`)
+          }
+        >
+          <h1>TPM</h1>
+        </button>
+      </div>
       <div className="Navbar_user_left_btn_container">
         <button
           className={

@@ -428,3 +428,93 @@ END $$
 
 DELIMITER ;
 
+## procedure for create order
+## moi them 8/5/2024
+DELIMITER $$
+
+CREATE DEFINER=`admin`@`%` PROCEDURE `createOrder`(
+    IN Seller_ID VARCHAR(255),
+    IN Customer_ID VARCHAR(255),
+    IN Address VARCHAR(255),
+    IN Shipping_company VARCHAR(255),
+    IN Total_quantity INT,
+    IN Order_date DATE
+)
+BEGIN
+    INSERT INTO ORDER_TABLE (
+        Seller_ID,
+        Customer_ID,
+        Address,
+        Shipping_company,
+        Total_quantity,
+        Order_date,
+        Status
+    ) VALUES (
+        Seller_ID,
+        Customer_ID,
+        Address,
+        Shipping_company,
+        Total_quantity,
+        Order_date,
+        'Waiting confirmation'
+    );
+
+    SELECT LAST_INSERT_ID() as Order_ID;  -- Return the ID of the inserted order
+END$$
+
+DELIMITER ;
+
+
+
+DELIMITER $$
+
+CREATE PROCEDURE createOrderDetails(
+    IN p_Order_ID INT,
+    IN p_Product_ID INT,
+    IN p_Option_number INT,
+    IN p_Quantity INT,
+    IN p_Discount_percentage DECIMAL(10,2),
+    IN p_Original_price DECIMAL(10,2)
+)
+BEGIN
+    DECLARE v_Final_price DECIMAL(10,2);
+
+    -- Calculate the final price
+    SET v_Final_price = (1 - p_Discount_percentage / 100) * p_Original_price * p_Quantity;
+
+    -- Insert the order item into ORDER_ITEM table
+    INSERT INTO ORDER_ITEM (
+        Order_ID,
+        Product_ID,
+        Option_number,
+        Quantity,
+        Discount_percentage,
+        Original_price,
+        Final_price
+    ) VALUES (
+        p_Order_ID,
+        p_Product_ID,
+        p_Option_number,
+        p_Quantity,
+        p_Discount_percentage,
+        p_Original_price,
+        v_Final_price
+    );
+END$$
+
+DELIMITER ;
+
+## TRIGGER after insert order item we update the total price in ORDER_TABLE
+DELIMITER $$
+
+CREATE TRIGGER AfterInsertOrderItem
+AFTER INSERT ON ORDER_ITEM
+FOR EACH ROW
+BEGIN
+    -- Update the total price in the ORDER_TABLE
+    UPDATE ORDER_TABLE
+    SET Total_price = COALESCE(Total_price, 0) + NEW.Final_price
+    WHERE Order_ID = NEW.Order_ID;
+END$$
+
+DELIMITER ;

@@ -8,20 +8,65 @@ export default function ({ params }) {
   const route = useRouter();
 
   const { user_id_encode, seller_id_encode } = params;
+  async function fetchOrders() {
+    try {
+      const response = await fetch(
+        `/api/seller/orders?seller_id=${seller_id_encode}`
+      );
+      const data = await response.json();
+      console.log(data);
+      const waitingConfirmationOrders = data.filter(
+        (order) => order.Status === "Waiting confirmation"
+      );
+      setOrderWatingConfirm(waitingConfirmationOrders);
+      console.log(data);
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   useEffect(() => {
-    fetch(`/api/seller/orders?seller_id=${seller_id_encode}`)
-      .then((response) => response.json())
-      .then((data) => {
-        // Filter the data to only include orders with the status "Waiting confirmation"
-        const waitingConfirmationOrders = data.filter(
-          (order) => order.Status === "Waiting confirmation"
-        );
-        setOrderWatingConfirm(waitingConfirmationOrders);
-        console.log(data);
-      })
-      .catch((error) => console.error(error));
+    fetchOrders();
   }, [seller_id_encode]);
+  async function updateOrderStatus(orderId, status) {
+    const response = await fetch(`/api/seller/order`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        Status: status,
+        Order_ID: orderId,
+        Expected_delivery_date: null,
+        Shipping_company: null,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    // Refresh the order list after updating the status
+    fetchOrders();
+  }
+  async function deleteOrder(orderId) {
+    const response = await fetch(`/api/seller/order`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        Order_ID: orderId,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    // Refresh the order list after deleting the order
+    fetchOrders();
+  }
 
   return (
     <div className="waiting_confirm_container">
@@ -44,7 +89,7 @@ export default function ({ params }) {
                 <td>{order.Total_quantity}</td>
                 <td>{order.Order_ID}</td>
                 <td>{order.Total_price}</td>
-                <td>{order.Customer_ID}</td>
+                <td>{order.FName + " " + order.LName}</td>
                 <td>
                   {new Date(order.Order_date).toISOString().split("T")[0]}
                 </td>
@@ -60,8 +105,16 @@ export default function ({ params }) {
                   >
                     View
                   </button>
-                  <button>Accept</button>
-                  <button>Reject</button>
+                  <button
+                    onClick={() =>
+                      updateOrderStatus(order.Order_ID, "Packaging")
+                    }
+                  >
+                    Accept
+                  </button>
+                  <button onClick={() => deleteOrder(order.Order_ID)}>
+                    Reject
+                  </button>
                 </td>
               </tr>
             ))}

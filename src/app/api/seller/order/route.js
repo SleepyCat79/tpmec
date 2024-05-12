@@ -30,3 +30,27 @@ export async function PUT(req) {
     });
   });
 }
+
+export async function DELETE(req) {
+  const data = await req.json();
+  const { Order_ID } = data;
+  const sqlOrderTable = `DELETE FROM ORDER_TABLE WHERE Order_id = ${Order_ID}`;
+  const sqlOrderItem = `DELETE FROM ORDER_ITEM WHERE Order_ID = ${Order_ID}`;
+  return new Promise((resolve, reject) => {
+    db.query(sqlOrderTable, (err, result) => {
+      if (err) {
+        reject(err);
+      } else {
+        db.query(sqlOrderItem, (err, result) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(
+              NextResponse.json({ message: "Order deleted successfully" })
+            );
+          }
+        });
+      }
+    });
+  });
+}

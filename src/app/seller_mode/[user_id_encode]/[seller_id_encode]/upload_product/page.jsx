@@ -78,6 +78,7 @@ export default function ({ params }) {
       if (res.ok) {
         alert("Product uploaded successfully");
         setIsWaiting(false);
+        window.location.reload();
       }
 
       // Move this fetch request inside the try block

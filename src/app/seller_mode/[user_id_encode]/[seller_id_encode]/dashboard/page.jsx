@@ -1,11 +1,18 @@
 "use client";
 import "./dashboard_seller.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Dashboard_tag from "@/components/dashboard_tag/dashboard_tag";
 import LineGraph from "@/components/graph_dashboard/graph_dashboard";
 import BestSeller from "@/components/best_seller_dashboard/best_seller";
-export default function page() {
+export default function page({ params }) {
   const currentDate = new Date();
+  const { user_id_encode, seller_id_encode } = params;
+  const [shop, setShop] = useState({
+    shopname: "",
+    email: "",
+    telephone: "",
+    address: [],
+  });
   const formattedDate = currentDate.toLocaleDateString("en-US", {
     month: "short",
     day: "2-digit",
@@ -56,11 +63,21 @@ export default function page() {
     { productId: "product_id" },
     { productId: "product_id" },
   ]);
+  useEffect(() => {
+    fetch(`/api/user/information?user_id=${user_id_encode}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setShop({
+          shopname: data.user.Shop_name,
+        });
+      })
+      .catch((err) => console.log(err));
+  }, []);
   return (
     <div className="dashboard_seller">
       <div className="dashboard_container">
         <div className="dashboard_header">
-          <p>Dashboard</p>
+          <p>{shop.shopname}</p>
           <p>{formattedDate}</p>
         </div>
         <div className="dasboard_tag_container">

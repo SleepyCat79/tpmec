@@ -17,9 +17,7 @@ export default function ({ params }) {
       <div className="product_list_container">
         <div className="product_list_header_seller">
           <h2>Shop's product</h2>
-          <p>
-            {user_id_encode},{seller_id_encode}
-          </p>
+
           <h4>Your shop currently have : {products.length} </h4>
         </div>
         <div className="product_list_tag_container">
