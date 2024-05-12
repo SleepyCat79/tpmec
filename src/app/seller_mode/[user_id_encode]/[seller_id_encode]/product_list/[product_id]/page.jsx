@@ -158,7 +158,7 @@ export default function page({ params }) {
         </div>
         <div>
           <h3>Product Image</h3>
-          <input type="file" multiple onChange={handleImageChange} />
+          {/* <input type="file" multiple onChange={handleImageChange} /> */}
           <div className="img_array">
             {images.map((image, index) => (
               <div className="img_container" key={index}>
@@ -167,13 +167,13 @@ export default function page({ params }) {
                   alt={`Product ${index + 1}`}
                   className="product-image"
                 />
-                <button
+                {/* <button
                   onClick={() =>
                     setImages(images.filter((_, i) => i !== index))
                   }
                 >
                   Delete
-                </button>
+                </button> */}
               </div>
             ))}
           </div>
