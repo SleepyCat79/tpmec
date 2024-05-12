@@ -5,6 +5,7 @@ export default function page({ params }) {
   const { user_id_encode, seller_id_encode, product_id } = params;
 
   const [product, setProduct] = useState(null);
+  const [name, setName] = useState("");
   const [rows, setRows] = useState([]);
   const [images, setImages] = useState([]);
   const [description, setDescription] = useState("");
@@ -14,6 +15,7 @@ export default function page({ params }) {
       .then((response) => response.json())
       .then((data) => {
         setProduct(data.product);
+        setName(data.product.Product_title);
         setRows(data.options);
         setImages(data.images);
 
@@ -23,7 +25,39 @@ export default function page({ params }) {
         console.error("Error:", error);
       });
   }, [product_id]);
+  const handleUpdate = () => {
+    const productData = {
+      productID: product_id,
+      productTitle: name,
+      productDescription: description,
+      productOptionList: rows.map((row) => ({
+        optionName: row.Option_name,
+        optionPrice: row.Option_price,
+      })),
+      sellerID: seller_id_encode,
+    };
+    console.log(productData.productOptionList);
 
+    fetch(`/api/seller/product`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(productData),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          console.log(data.message);
+          alert(data.message);
+        } else {
+          console.error("Error:", data.message);
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  };
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
     const fileReaders = files.map((file) => {
@@ -67,11 +101,54 @@ export default function page({ params }) {
           <h3>Name</h3>
           <input
             type="text"
-            value={product ? product.Product_title : ""}
-            readOnly
+            value={name ? name : ""}
+            onChange={(e) => setName(e.target.value)}
           />
         </div>
-        {/* ... rest of your code ... */}
+        <div className="input_price">
+          <h3>Sale option</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Price</th>
+                <th>¥ per</th>
+                <th>Unit</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row, index) => (
+                <tr key={index}>
+                  <td>
+                    <input
+                      type="text"
+                      value={row.Option_price}
+                      onChange={(e) =>
+                        updateRow(index, "Option_price", e.target.value)
+                      }
+                      placeholder="Ex: 100"
+                    />
+                  </td>
+                  <td></td>
+                  <td>
+                    <input
+                      type="text"
+                      value={row.Option_name}
+                      onChange={(e) =>
+                        updateRow(index, "Option_name", e.target.value)
+                      }
+                      placeholder="Ex: package of 1.5 kg"
+                    />
+                  </td>
+                  <td>
+                    <button onClick={() => deleteRow(index)}>Delete</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <button onClick={addRow}>Add row</button>
+        </div>
         <div className="input_description">
           <h3>Description</h3>
           <textarea
@@ -102,7 +179,7 @@ export default function page({ params }) {
           </div>
         </div>
         <div className="submit_button">
-          <button>Update</button>
+          <button onClick={handleUpdate}>Update</button>
         </div>
       </div>
     </div>

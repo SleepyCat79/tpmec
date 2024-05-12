@@ -81,3 +81,44 @@ export async function GET(req) {
     });
   });
 }
+
+// Updating product for seller
+export async function PUT(req) {
+  const data = await req.json();
+  const {
+    productID,
+    productTitle,
+    productDescription,
+    productOptionList, // list option [{optionName,optionPrice}]
+    productImageList, //list image [{imageURL}]
+    sellerID,
+  } = data;
+
+  const sql1 = `UPDATE PRODUCT SET Product_Title='${productTitle}', Product_Description='${productDescription}' WHERE Product_ID='${productID}' AND Seller_ID='${sellerID}'`;
+
+  return new Promise((resolve, reject) => {
+    db.query(sql1, (err, result) => {
+      if (err) {
+        console.log(err);
+        reject(NextResponse.error(err));
+      } else {
+        productOptionList.forEach((option, index) => {
+          const sql2 = `UPDATE PRODUCT_OPTION SET Option_Name='${option.optionName}', Option_Price='${option.optionPrice}' WHERE Product_ID='${productID}' AND Option_Number='${index}'`;
+          db.query(sql2, (err, result) => {
+            if (err) {
+              console.log(err);
+              reject(NextResponse.error(err));
+            }
+          });
+        });
+
+        resolve(
+          NextResponse.json({
+            success: true,
+            message: "Product updated successfully",
+          })
+        );
+      }
+    });
+  });
+}
