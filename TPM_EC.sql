@@ -1,4 +1,4 @@
-drop schema TPM_EC;
+##drop schema TPM_EC;
 create schema TPM_EC;
 
 USE TPM_EC;
@@ -105,6 +105,7 @@ CREATE TABLE SHIPPING_COMPANY (
         foreign key (Seller_ID) references USER(User_ID)
 );
 
+ALTER TABLE PRODUCT ADD FULLTEXT (Product_title,Product_description)
 ## PROCEDURE FOR USER
 
 DELIMITER $$
@@ -379,3 +380,51 @@ BEGIN
 END $$
 
 DELIMITER ;
+
+## procedure for searching
+
+DELIMITER $$
+
+CREATE PROCEDURE searchProduct(IN p_product_name VARCHAR(255))
+BEGIN
+    SELECT 
+        p.Product_ID,
+        p.Seller_ID,
+        p.Product_title,
+        p.Product_description,
+        MIN(po.Option_price) AS First_Option_Price,
+        MIN(pi.Image_url) AS First_Image
+    FROM PRODUCT p
+    LEFT JOIN PRODUCT_OPTION po ON p.Product_ID = po.Product_ID AND po.IsValid = TRUE
+    LEFT JOIN PRODUCT_IMAGE pi ON p.Product_ID = pi.Product_ID
+    WHERE p.Product_title LIKE CONCAT('%', p_product_name, '%')
+       OR p.Product_description LIKE CONCAT('%', p_product_name, '%')
+    GROUP BY p.Product_ID;
+END$$
+
+DELIMITER ;
+
+call searchProduct('apple');
+
+## procedure get all product of shop
+
+DELIMITER $$
+
+CREATE PROCEDURE Get_all_product_of_seller_for_user(IN p_seller_ID VARCHAR(255))
+BEGIN
+    SELECT 
+        p.Product_ID,
+        p.Seller_ID,
+        p.Product_title,
+        p.Product_description,
+        MIN(po.Option_price) AS First_Option_Price,
+        MIN(pi.Image_url) AS First_Image
+    FROM PRODUCT p
+    LEFT JOIN PRODUCT_OPTION po ON p.Product_ID = po.Product_ID AND po.IsValid = TRUE
+    LEFT JOIN PRODUCT_IMAGE pi ON p.Product_ID = pi.Product_ID
+    WHERE p.Seller_ID = p_seller_ID
+    GROUP BY p.Product_ID;
+END $$
+
+DELIMITER ;
+

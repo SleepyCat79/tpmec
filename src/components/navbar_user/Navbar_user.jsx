@@ -21,8 +21,10 @@ const poolData = {
   ClientId: process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID, // Your Client ID
 };
 
-export default function NavbarUser({ totalCartMoney, userID }) {
+export default function NavbarUser({ userID }) {
   const [isSeller, setIsSeller] = useState(false);
+
+  const [user, setUser] = useState({});
   const cognitoidentityserviceprovider =
     new AWS.CognitoIdentityServiceProvider();
 
@@ -51,6 +53,18 @@ export default function NavbarUser({ totalCartMoney, userID }) {
         }
       }
     );
+  }, []);
+  useEffect(() => {
+    async function fetchUserInformation() {
+      const response = await fetch(
+        `/api/user/information?user_id=${encodeURIComponent(userID)}`
+      );
+      if (response.ok) {
+        const data = await response.json();
+        setUser(data.user);
+      }
+    }
+    fetchUserInformation();
   }, []);
   const [email, setemail] = useState("");
   const route = useRouter();
@@ -134,7 +148,7 @@ export default function NavbarUser({ totalCartMoney, userID }) {
               alt="cart_icon"
             />
           </div>
-          <p>{totalCartMoney}</p>
+          <p>{user.Total_Quantity}</p>
         </div>
         <div>
           <div className="icon_navbar_container">
@@ -145,7 +159,7 @@ export default function NavbarUser({ totalCartMoney, userID }) {
               alt="cart_icon"
             />
           </div>
-          <p>{email}</p>
+          <p>{user.LName}</p>
         </div>
         <div>
           <button

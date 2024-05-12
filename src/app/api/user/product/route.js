@@ -26,13 +26,23 @@ export async function GET(req) {
                 console.log(err);
                 resolve(NextResponse.error(err));
               } else {
-                resolve(
-                  NextResponse.json({
-                    product: result1[0],
-                    images: result2,
-                    options: result3,
-                  })
-                );
+                const seller_id = result1[0].Seller_ID;
+                const sql4 = `SELECT * FROM USER WHERE User_ID='${seller_id}'`;
+                db.query(sql4, (err, result4) => {
+                  if (err) {
+                    console.log(err);
+                    resolve(NextResponse.error(err));
+                  } else {
+                    resolve(
+                      NextResponse.json({
+                        product: result1[0],
+                        images: result2,
+                        options: result3,
+                        seller: result4[0],
+                      })
+                    );
+                  }
+                });
               }
             });
           }

@@ -11,6 +11,7 @@ export default function Product_detail_description({ user_id, product_id }) {
   const [quantity, setQuantity] = useState(1);
   const [isLoading, setIsLoading] = useState(true); // Add this line
   const [option, setOption] = useState([]);
+  const [seller, setSeller] = useState({});
 
   useEffect(() => {
     fetch(`/api/user/product?product_id=${product_id}`)
@@ -18,12 +19,18 @@ export default function Product_detail_description({ user_id, product_id }) {
       .then((data) => {
         setProduct(data.product);
         setOption(data.options);
+        setSeller(data.seller);
         setIsLoading(false); // Add this line
       })
       .catch((error) => {
         console.error("Error:", error);
       });
   }, [product_id]);
+  useEffect(() => {
+    console.log(product);
+    console.log(option);
+    console.log(seller);
+  }, [product]);
   if (isLoading) {
     // Add this block
     return <div>Loading...</div>;
@@ -52,12 +59,20 @@ export default function Product_detail_description({ user_id, product_id }) {
       console.error("Error:", response.statusText);
     }
   }
+
+  function visitShop() {
+    router.push(
+      `/homepage/${encodeURIComponent(user_id)}/shop/${encodeURIComponent(
+        seller.User_ID
+      )}`
+    );
+  }
   return (
     <div className="product_detail">
       <p className="product_detail_product_name">{product.Product_title}</p>
       <div className="product_detail_seller">
         <div className="product_detail_seller_img_contaienr">
-          {/* <Image src={product.seller.img_url} alt="seller_img" fill="true" /> */}
+          <Image src="/next.svg" alt="seller_img" fill="true" />
         </div>
         <div className="product_detail_seller_in4">
           <div>
@@ -67,9 +82,11 @@ export default function Product_detail_description({ user_id, product_id }) {
               width={15}
               alt="location icon"
             />
-            {/* <p>{product.seller.location}</p> */}
+            <p>{seller.Phone_Number}</p>
           </div>
-          <p className="product_detail_seller_name">{product.Seller_ID}</p>
+          <button className="btn_visit_shop" onClick={visitShop}>
+            <p className="product_detail_seller_name">{seller.Shop_name}</p>
+          </button>
         </div>
       </div>
       <div className="option_container_product_detail">
