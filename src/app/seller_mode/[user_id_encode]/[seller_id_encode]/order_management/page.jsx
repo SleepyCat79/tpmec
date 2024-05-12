@@ -9,7 +9,10 @@ export default function ({ params }) {
     const response = await fetch(`/api/seller/orders?seller_id=${seller_id}`);
     const data = await response.json();
     console.log(data);
-    setOrder(data);
+    const filteredOrders = data.filter(
+      (order) => order.Status !== "Waiting confirmation"
+    );
+    setOrder(filteredOrders);
   }
   useEffect(() => {
     fetchData();

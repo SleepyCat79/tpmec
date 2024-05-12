@@ -1,15 +1,29 @@
 "use client";
 import "../../upload_product/page.css";
-import { useState } from "react";
-export default function page() {
-  const [rows, setRows] = useState([
-    { price: "1000", unit: "1 pack of 1.5kg" },
-    { price: "1000", unit: "1 pack of 1.5kg" },
-    { price: "1000", unit: "1 pack of 1.5kg" },
-    { price: "1000", unit: "1 pack of 1.5kg" },
-  ]);
+import { useState, useEffect } from "react";
+export default function page({ params }) {
+  const { user_id_encode, seller_id_encode, product_id } = params;
+
+  const [product, setProduct] = useState(null);
+  const [rows, setRows] = useState([]);
   const [images, setImages] = useState([]);
-  const [Description, setDescription] = useState("This is a very good product");
+  const [description, setDescription] = useState("");
+
+  useEffect(() => {
+    fetch(`/api/user/product?product_id=${product_id}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setProduct(data.product);
+        setRows(data.options);
+        setImages(data.images);
+
+        setDescription(data.product.Product_description);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  }, [product_id]);
+
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
     const fileReaders = files.map((file) => {
@@ -49,57 +63,19 @@ export default function page() {
   return (
     <div className="upload_product_big_container">
       <div className="upload_product_container">
-        <h3>Add new product to your shop</h3>
         <div className="input_name">
           <h3>Name</h3>
-          <input type="text" />
+          <input
+            type="text"
+            value={product ? product.Product_title : ""}
+            readOnly
+          />
         </div>
-        <div className="input_price">
-          <h3>Sale option</h3>
-          <table>
-            <thead>
-              <tr>
-                <th>Price</th>
-                <th>¥ per</th>
-                <th>Unit</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((row, index) => (
-                <tr key={index}>
-                  <td>
-                    <input
-                      type="text"
-                      value={row.price}
-                      onChange={(e) =>
-                        updateRow(index, "price", e.target.value)
-                      }
-                      placeholder="Ex: 100"
-                    />
-                  </td>
-                  <td></td>
-                  <td>
-                    <input
-                      type="text"
-                      value={row.unit}
-                      onChange={(e) => updateRow(index, "unit", e.target.value)}
-                      placeholder="Ex: package of 1.5 kg"
-                    />
-                  </td>
-                  <td>
-                    <button onClick={() => deleteRow(index)}>Delete</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <button onClick={addRow}>Add row</button>
-        </div>
+        {/* ... rest of your code ... */}
         <div className="input_description">
           <h3>Description</h3>
           <textarea
-            value={Description}
+            value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
         </div>
@@ -108,10 +84,9 @@ export default function page() {
           <input type="file" multiple onChange={handleImageChange} />
           <div className="img_array">
             {images.map((image, index) => (
-              <div className="img_container">
+              <div className="img_container" key={index}>
                 <img
-                  key={index}
-                  src={image}
+                  src={image.Image_url} // Use Image_url property
                   alt={`Product ${index + 1}`}
                   className="product-image"
                 />
