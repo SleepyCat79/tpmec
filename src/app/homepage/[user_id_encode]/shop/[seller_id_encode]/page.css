@@ -8,3 +8,34 @@
   align-items: center;
   flex-wrap: wrap;
 }
+.productList {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.shopNameContainer {
+  background-color: #1a1f35;
+  color: white;
+  padding: 40px;
+  width: 100%;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.shopNameContainer .textContainer {
+  text-align: left;
+}
+
+.shopNameContainer::after {
+  content: "";
+  position: absolute;
+  left: 500px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background-color: white;
+}

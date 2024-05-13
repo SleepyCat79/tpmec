@@ -1,5 +1,7 @@
 "use client";
 import React from "react";
+import Image from "next/image";
+
 import "./page.css";
 import { useState, useEffect } from "react";
 import Product_cart from "@/components/product_cart/product_cart";
@@ -8,6 +10,8 @@ export default function Seller_shop({ params }) {
   const user_id = decodeURIComponent(user_id_encode);
   const seller_id = decodeURIComponent(seller_id_encode);
   const [products, setProducts] = useState([]);
+  const [shopName, setShopName] = useState(""); // Add state for shop name
+
   useEffect(() => {
     fetch(`/api/user/shop?seller_id=${seller_id}`)
       .then((response) => response.json())
@@ -26,15 +30,31 @@ export default function Seller_shop({ params }) {
           percentage: 0, // replace with actual data if available
         }));
         setProducts(transformedData);
+        setShopName(data[0].Shop_name);
       })
       .catch((error) => console.error("Error:", error));
   }, []);
 
   return (
     <div className="listProductOfShopContainer">
-      {products.map((product, index) => (
-        <Product_cart key={index} product={product} userID={user_id} />
-      ))}
+      <div className="shopNameContainer">
+        <div className="textContainer">
+          <h2>{shopName}</h2>
+          <Image
+            src={"/location_icon.png"}
+            height={15}
+            width={15}
+            alt="Location Icon"
+          />
+          <span>Ho Chi Minh city, Viet Nam</span>
+          <p>農産物の卸売・小売を行う専門店です。 全国発送</p>
+        </div>
+      </div>
+      <div className="productList">
+        {products.map((product, index) => (
+          <Product_cart key={index} product={product} userID={user_id} />
+        ))}
+      </div>
     </div>
   );
 }
