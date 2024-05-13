@@ -9,6 +9,9 @@ export default function CheckoutPage({ params }) {
 
   const user_id_encode = params.user_id_encode;
   const user_id = decodeURIComponent(user_id_encode);
+  const [isEditing, setIsEditing] = useState(false);
+  const [address, setAddress] = useState("");
+
   const [user_information, setUserInformation] = useState({
     user_name: "",
     user_phone: "",
@@ -53,11 +56,13 @@ export default function CheckoutPage({ params }) {
       );
       if (response.ok) {
         const data = await response.json();
+        console.log(data);
         setUserInformation({
           user_name: data.user.FName + " " + data.user.LName,
           user_phone: data.user.Phone_Number,
           user_address: data.address.map((item) => item.Address),
         });
+        setAddress(data.address[0].Address);
       } else {
         console.error("Error:", response.statusText);
       }
@@ -66,7 +71,33 @@ export default function CheckoutPage({ params }) {
     fetchCheckout();
     fetchUserInformation();
   }, [user_id]);
+  async function handleBack() {
+    for (let shop of cart.shop) {
+      for (let product of shop.product) {
+        const data = {
+          operation: "updateIsChecked",
+          product_id: product.product_id,
+          user_id: user_id,
+          option_number: product.Option_number,
+          isChecked: 0,
+        };
 
+        const response = await fetch("/api/user/cart", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        });
+
+        if (!response.ok) {
+          alert(`Failed to update product ${product.product_id}`);
+        }
+      }
+    }
+    // Redirect to the previous page or any other page
+    route.push(`/homepage/${encodeURIComponent(user_id)}/cart`);
+  }
   function calculateTotalPrice() {
     let total = 0;
     if (cart.shop && Array.isArray(cart.shop)) {
@@ -98,7 +129,7 @@ export default function CheckoutPage({ params }) {
         const data = {
           Seller_ID: shop.shop_id, // Seller_ID is obtained from the first checked product
           Customer_ID: user_id, // Replace with actual Customer_ID
-          Address: user_information.user_address[0], // Replace with actual Address
+          Address: address, // Replace with actual Address
           Shipping_company: shop.delivery_company, // Replace with actual Shipping_company
           Total_quantity: Product_list.length,
           Product_list,
@@ -157,8 +188,24 @@ export default function CheckoutPage({ params }) {
           <p>
             {user_information.user_name} {user_information.user_phone}
           </p>
-          <p>{user_information.user_address[0]}</p>
-          <button>Thay doi</button>
+          {isEditing ? (
+            <select
+              onChange={(e) => {
+                setAddress(e.target.value);
+              }}
+            >
+              {user_information.user_address.map((address, index) => (
+                <option key={index} value={address}>
+                  {address}
+                </option>
+              ))}
+            </select>
+          ) : (
+            <p>{address}</p>
+          )}
+          <button onClick={() => setIsEditing(!isEditing)}>
+            {isEditing ? "Xong" : "Thay doi"}
+          </button>
         </div>
       </div>
       <div className="field_bar_checkout">
@@ -232,6 +279,9 @@ export default function CheckoutPage({ params }) {
         </div>
 
         <button onClick={handle_checkout}>Dat hang</button>
+        <button className="back-button" onClick={handleBack}>
+          Quay lại
+        </button>
       </div>
     </div>
   );

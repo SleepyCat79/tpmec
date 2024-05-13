@@ -7,6 +7,30 @@ import BestSeller from "@/components/best_seller_dashboard/best_seller";
 export default function page({ params }) {
   const currentDate = new Date();
   const { user_id_encode, seller_id_encode } = params;
+  const [totalOrders, setTotalOrders] = useState(0);
+  const [completedOrders, setCompletedOrders] = useState(0);
+  const [processingOrders, setProcessingOrders] = useState(0);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          `/api/seller/orders/?seller_id=${seller_id_encode}`
+        );
+        const data = await response.json();
+        setTotalOrders(data.length);
+        setCompletedOrders(
+          data.filter((order) => order.Status === "Complete").length
+        );
+        setProcessingOrders(
+          data.filter((order) => order.Status !== "Complete").length
+        );
+      } catch (error) {
+        console.error("Failed to fetch data:", error);
+      }
+    };
+
+    fetchData();
+  }, [seller_id_encode]);
   const [shop, setShop] = useState({
     shopname: "",
     email: "",
@@ -83,28 +107,28 @@ export default function page({ params }) {
         <div className="dasboard_tag_container">
           <Dashboard_tag
             name="Total Order"
-            totalValue={126.5}
+            totalValue={totalOrders}
             rateOfChange={34.7}
             compareWithTime="Oct 2023"
             isUp={true}
           />
           <Dashboard_tag
             name="Processing Order"
-            totalValue={126.5}
+            totalValue={processingOrders}
             rateOfChange={34.7}
             compareWithTime="Oct 2023"
             isUp={true}
           />
           <Dashboard_tag
             name="Completed Order"
-            totalValue={126.5}
+            totalValue={completedOrders}
             rateOfChange={34.7}
             compareWithTime="Oct 2023"
             isUp={true}
           />
           <Dashboard_tag
             name="Return Order"
-            totalValue={126.5}
+            totalValue={0}
             rateOfChange={34.7}
             compareWithTime="Oct 2023"
             isUp={false}
@@ -141,11 +165,7 @@ export default function page({ params }) {
             <div className="best_seller_dashboard_header">
               <h3>Best seller</h3>
             </div>
-            <div className="best_seller_content">
-              {bestSellerData.map((item, index) => {
-                return <BestSeller key={index} productId={item.productId} />;
-              })}
-            </div>
+            <div className="best_seller_content"></div>
           </div>
         </div>
       </div>

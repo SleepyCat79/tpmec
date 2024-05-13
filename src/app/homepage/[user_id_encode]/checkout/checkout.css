@@ -194,3 +194,9 @@
   font-size: x-large;
   cursor: pointer;
 }
+.checkout_final_step .back-button {
+  width: 200px; /* Adjust as needed */
+  height: 40px; /* Adjust as needed */
+  margin-top: 10px;
+  background-color: #455a64; /* Darker color */
+}

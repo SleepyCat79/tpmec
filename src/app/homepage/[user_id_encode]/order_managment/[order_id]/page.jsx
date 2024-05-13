@@ -8,6 +8,7 @@ export default function CheckoutPage({ params }) {
   const [orderDetails, setOrderDetails] = useState(null);
   const path = window.location.pathname;
   const pathParts = path.split("/");
+  const [address, setAddress] = useState("");
   const Order_ID = pathParts[pathParts.length - 1];
   const [user_information, setUserInformation] = useState({
     user_name: "",
@@ -34,6 +35,7 @@ export default function CheckoutPage({ params }) {
       .then((response) => response.json())
       .then((data) => {
         const orderData = data.body.order;
+        setAddress(data.body.order.Address);
         const orderItems = data.body.order_items;
         const productPromises = orderItems.map((item) =>
           fetch(`/api/user/product?product_id=${item.Product_ID}`).then(
@@ -84,7 +86,7 @@ export default function CheckoutPage({ params }) {
           <p>
             {user_information.user_name} {user_information.user_phone}
           </p>
-          <p>{user_information.user_address[0]}</p>
+          <p>{address}</p>
         </div>
       </div>
       <div className="field_bar_checkout">

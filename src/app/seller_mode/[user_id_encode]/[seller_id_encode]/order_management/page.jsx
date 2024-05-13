@@ -175,9 +175,11 @@ export default function ({ params }) {
                     )}
                   </td>
                   <td>
-                    <button onClick={() => onClick(index)}>
-                      {indexUpdate === index ? "Save" : "Edit"}
-                    </button>
+                    {item.Status !== "Complete" && (
+                      <button onClick={() => onClick(index)}>
+                        {indexUpdate === index ? "Save" : "Edit"}
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}
