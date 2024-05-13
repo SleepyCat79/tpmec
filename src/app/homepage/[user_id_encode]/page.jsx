@@ -14,32 +14,7 @@ export default function Page({ params }) {
   const advetisementListRef = useRef();
 
   const user_id = decodeURIComponent(user_id_encode);
-  const [advertisements, setAdvertisement] = useState([
-    {
-      image: "/ad1.jpeg",
-      product_id: "product_1",
-    },
-    {
-      image: "/ad2.jpeg",
-      product_id: "product_2",
-    },
-    {
-      image: "/ad3.jpeg",
-      product_id: "product_3",
-    },
-    {
-      image: "/ad4.jpeg",
-      product_id: "product_4",
-    },
-    {
-      image: "/ad5.jpeg",
-      product_id: "product_5",
-    },
-    {
-      image: "/ad6.jpeg",
-      product_id: "product_6",
-    },
-  ]);
+  const [advertisements, setAdvertisement] = useState([]);
   const [bestSellerProducts, setBestSellerProducts] = useState([]);
   useEffect(() => {
     fetch("/api/user/products") // replace with your actual API endpoint
@@ -62,6 +37,15 @@ export default function Page({ params }) {
         }));
 
         setBestSellerProducts(transformedData);
+      })
+      .catch((error) => console.error("Error:", error));
+  }, []);
+  useEffect(() => {
+    fetch("/api/user/advertisement") // replace with your actual API endpoint
+      .then((response) => response.json())
+      .then((data) => {
+        setAdvertisement(data);
+        console.log(data);
       })
       .catch((error) => console.error("Error:", error));
   }, []);
@@ -126,7 +110,11 @@ export default function Page({ params }) {
         </button>
         <div className="advertisement_container" ref={advetisementListRef}>
           {advertisements.map((advertisement, index) => (
-            <AdvertisementCart key={index} advertisement={advertisement} />
+            <AdvertisementCart
+              key={index}
+              advertisement={advertisement}
+              user_id={user_id}
+            />
           ))}
         </div>
         <button onClick={scrollRightAd}>

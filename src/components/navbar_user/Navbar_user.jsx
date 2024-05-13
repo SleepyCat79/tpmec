@@ -62,6 +62,7 @@ export default function NavbarUser({ userID }) {
       if (response.ok) {
         const data = await response.json();
         setUser(data.user);
+        console.log(data.user);
       }
     }
     fetchUserInformation();
@@ -148,7 +149,7 @@ export default function NavbarUser({ userID }) {
               alt="cart_icon"
             />
           </div>
-          <p>{user.Total_Quantity}</p>
+          <p>{user.Total_Quantity ? user.Total_Quantity : "loading.."}</p>
         </div>
         <div>
           <div className="icon_navbar_container">
@@ -159,7 +160,7 @@ export default function NavbarUser({ userID }) {
               alt="cart_icon"
             />
           </div>
-          <p>{user.LName}</p>
+          <p>{user.LName ? user.LName : "loading..."}</p>
         </div>
         <div>
           <button
