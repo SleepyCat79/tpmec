@@ -6,6 +6,8 @@ import CategoryCart from "@/components/category_cart/category_cart";
 import "./homepage.css";
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import { Carousel } from "react-responsive-carousel";
+import "react-responsive-carousel/lib/styles/carousel.min.css";
 
 export default function Page({ params }) {
   const { user_id_encode } = params;
@@ -15,17 +17,44 @@ export default function Page({ params }) {
 
   const user_id = decodeURIComponent(user_id_encode);
   const [advertisements, setAdvertisement] = useState([]);
+  const advertisements2 = [
+    "1.jpg",
+    "2.jpg",
+    "3.jpg",
+    "4.jpg",
+    "5.jpg",
+    "6.jpg",
+  ]; // replace with your actual image sources
+
   const [bestSellerProducts, setBestSellerProducts] = useState([]);
+  const [currentImage, setCurrentImage] = useState(0);
+
+  const nextImage = () => {
+    setCurrentImage((prevImage) => (prevImage + 1) % advertisements2.length);
+  };
+  const prevImage = () => {
+    setCurrentImage(
+      (prevImage) =>
+        (prevImage - 1 + advertisements2.length) % advertisements2.length
+    );
+  };
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      nextImage();
+    }, 3000); // Change image every 3 seconds
+
+    return () => clearInterval(timer); // Clean up on component unmount
+  }, []);
   useEffect(() => {
     fetch("/api/user/products") // replace with your actual API endpoint
       .then((response) => response.json())
       .then((data) => {
         // transform the data into the format you need
 
-        console.log(data);
         const transformedData = data.map((item) => ({
           productImg: item.First_Image,
-          sellerImg: "/user_icon.png", // replace with actual data if available
+          sellerImg: item.Shop_image, // replace with actual data if available
           sellerName: item.Shop_name, // replace with actual data if available
           productName: item.Product_title,
           location: "北海道日高地方", // replace with actual data if available
@@ -160,15 +189,10 @@ export default function Page({ params }) {
           </button>
         </div>
       </div>
-      {/* <div className="best_seller_container">
+      <div className="best_seller_container">
         <p className="best_seller_title">割引商品</p>
-        <div className="big_best_seller_container">
-          <button
-            onClick={() => {
-              scrollLeft(productSaleListRef);
-            }}
-            className="scroll_btn"
-          >
+        <div className="big_advertisement_container">
+          <button onClick={prevImage}>
             <Image
               src="/icon_arr_left.png"
               alt="left_arrow"
@@ -176,24 +200,36 @@ export default function Page({ params }) {
               height={50}
             />
           </button>
-          <div className="product_list" ref={productSaleListRef}>
-            <Product_cart product={saleProducts} userID={user_id} />
-            <Product_cart product={saleProducts} userID={user_id} />
-            <Product_cart product={saleProducts} userID={user_id} />
-            <Product_cart product={saleProducts} userID={user_id} />
-            <Product_cart product={saleProducts} userID={user_id} />
-            <Product_cart product={saleProducts} userID={user_id} />
-            <Product_cart product={saleProducts} userID={user_id} />
-            <Product_cart product={saleProducts} userID={user_id} />
-            <Product_cart product={saleProducts} userID={user_id} />
-            <Product_cart product={saleProducts} userID={user_id} />
-          </div>
-          <button
-            onClick={() => {
-              scrollRight(productSaleListRef);
-            }}
-            className="scroll_btn"
+          <div
+            className="advertisement_container"
+            ref={advetisementListRef}
+            style={{ display: "flex", overflowX: "hidden", width: "1200px" }}
           >
+            {[...advertisements2, ...advertisements2]
+              .slice(currentImage, currentImage + 3)
+              .map((imageName, index) => (
+                <div
+                  key={index}
+                  style={{
+                    width: "400px",
+                    height: "400px",
+                    overflow: "hidden",
+                    flexShrink: 0,
+                  }}
+                >
+                  <img
+                    src={`/${imageName}`}
+                    alt={`Advertisement ${index}`}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                    }}
+                  />
+                </div>
+              ))}
+          </div>
+          <button onClick={nextImage}>
             <Image
               src="/icon_arr_right.png"
               alt="left_arrow"
@@ -202,7 +238,7 @@ export default function Page({ params }) {
             />
           </button>
         </div>
-      </div> */}
+      </div>
       {/* <div className="category_container">
         <p className="category_title">Shop by category</p>
         <div className="category_list">

@@ -190,6 +190,7 @@ export default function CheckoutPage({ params }) {
           </p>
           {isEditing ? (
             <select
+              value={address}
               onChange={(e) => {
                 setAddress(e.target.value);
               }}
