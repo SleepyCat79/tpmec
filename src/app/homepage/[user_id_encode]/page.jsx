@@ -6,8 +6,6 @@ import CategoryCart from "@/components/category_cart/category_cart";
 import "./homepage.css";
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { Carousel } from "react-responsive-carousel";
-import "react-responsive-carousel/lib/styles/carousel.min.css";
 
 export default function Page({ params }) {
   const { user_id_encode } = params;
