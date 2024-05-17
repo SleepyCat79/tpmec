@@ -108,6 +108,7 @@ export default function Page({ params }) {
     }
   };
   const scrollLeftAd = () => {
+    console.log("scroll left");
     if (advetisementListRef.current) {
       advetisementListRef.current.scrollTo({
         left: advetisementListRef.current.scrollLeft - 400, // adjust this as needed
@@ -201,7 +202,12 @@ export default function Page({ params }) {
           <div
             className="advertisement_container"
             ref={advetisementListRef}
-            style={{ display: "flex", overflowX: "hidden", width: "1200px" }}
+            style={{
+              display: "flex",
+              overflowX: "hidden",
+              width: "90%",
+              justifyContent: "center",
+            }}
           >
             {[...advertisements2, ...advertisements2]
               .slice(currentImage, currentImage + 3)
@@ -213,6 +219,7 @@ export default function Page({ params }) {
                     height: "400px",
                     overflow: "hidden",
                     flexShrink: 0,
+                    margin: "40px",
                   }}
                 >
                   <img

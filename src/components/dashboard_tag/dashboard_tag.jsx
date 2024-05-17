@@ -22,19 +22,6 @@ export default function Dashboard_tag({
           />
           {totalValue}
         </div>
-
-        <div>
-          <Image
-            src={isUp ? "/arrow_up.png" : "/arrow_down.png"}
-            width={20}
-            height={20}
-            alt="arrow_icon"
-          />
-          <p>{rateOfChange}%</p>
-        </div>
-      </div>
-      <div className="tag_dashboard_time">
-        <p> Compare to {compareWithTime}</p>
       </div>
     </div>
   );

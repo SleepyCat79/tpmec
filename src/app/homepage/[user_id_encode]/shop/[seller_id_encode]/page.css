@@ -4,7 +4,7 @@
   margin-top: 70px;
   display: flex;
   flex-direction: row;
-  justify-content: flex-start;
+  justify-content: center;
   align-items: center;
   flex-wrap: wrap;
 }
@@ -15,12 +15,14 @@
 }
 
 .shopNameContainerShopScreen {
-  width: 100%;
+  width: 90%;
   justify-content: center;
   align-items: center;
   display: flex;
   flex-direction: row;
   column-gap: 20px;
+  background-color: #1a1f35;
+  margin-top: 10px;
 }
 
 .imageSellerContainer {
@@ -29,4 +31,10 @@
   background-color: none;
   border-radius: 50%;
   position: relative;
+  overflow: hidden;
+  border: 2px solid white;
+  padding: 2px;
+}
+.textContainerShopScreen {
+  color: white;
 }

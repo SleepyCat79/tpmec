@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import "./register_information.css";
+import { useRouter } from "next/navigation";
 const AWS = require("aws-sdk");
 
 AWS.config.update({
@@ -12,6 +13,7 @@ AWS.config.update({
 const cognito = new AWS.CognitoIdentityServiceProvider();
 
 export default function RegisterInformation({ params }) {
+  const router = useRouter();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [gender, setGender] = useState("");
@@ -119,6 +121,7 @@ export default function RegisterInformation({ params }) {
         .then((data) => {
           console.log(data);
           alert("User information successfully updated"); // Alert the user
+          router.push("/sign_in");
         })
         .catch((error) => {
           console.error("Error:", error);

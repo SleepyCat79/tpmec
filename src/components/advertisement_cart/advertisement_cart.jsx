@@ -14,9 +14,13 @@ export default function AdvertisementCart({ advertisement, user_id }) {
         fill="true"
         alt="advertisement_image"
       />
+      <div className="shopNameAdvertisementCart">
+        <h3>{advertisement.Shop_name}</h3>
+      </div>
+
       <div className="overlay">
         <button className="detail-button" onClick={showDetails}>
-          Show Details
+          Visit this shop
         </button>
       </div>
     </div>

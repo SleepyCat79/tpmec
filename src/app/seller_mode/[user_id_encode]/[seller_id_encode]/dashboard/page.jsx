@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Dashboard_tag from "@/components/dashboard_tag/dashboard_tag";
 import LineGraph from "@/components/graph_dashboard/graph_dashboard";
 import BestSeller from "@/components/best_seller_dashboard/best_seller";
+import Image from "next/image";
 export default function page({ params }) {
   const currentDate = new Date();
   const { user_id_encode, seller_id_encode } = params;
@@ -93,6 +94,7 @@ export default function page({ params }) {
       .then((data) => {
         setShop({
           shopname: data.user.Shop_name,
+          img: data.user.Shop_image,
         });
       })
       .catch((err) => console.log(err));
@@ -101,14 +103,26 @@ export default function page({ params }) {
     <div className="dashboard_seller">
       <div className="dashboard_container">
         <div className="dashboard_header">
-          <p>{shop.shopname}</p>
+          <div>
+            <div
+              style={{
+                width: "100px",
+                height: "100px",
+                borderRadius: "50%",
+                overflow: "hidden",
+                position: "relative",
+              }}
+            >
+              <Image src={shop.img} fill="true" />
+            </div>
+            <p>{shop.shopname}</p>
+          </div>
           <p>{formattedDate}</p>
         </div>
         <div className="dasboard_tag_container">
           <Dashboard_tag
             name="Total Order"
             totalValue={totalOrders}
-            rateOfChange={34.7}
             compareWithTime="Oct 2023"
             isUp={true}
           />

@@ -4,8 +4,8 @@ const db = connectToDatabase();
 
 export async function POST(req) {
   const data = await req.json();
-  const { shopName, shippingCompanyList, User_ID } = data;
-  const sql = `UPDATE USER SET Shop_name='${shopName}',IsSeller=true WHERE User_id='${User_ID}'`;
+  const { shopName, shippingCompanyList, User_ID, shopImg, shopAddress } = data;
+  const sql = `UPDATE USER SET Shop_name='${shopName}',IsSeller=true, Shop_image = '${shopImg}', Shop_address = '${shopAddress}'  WHERE User_id='${User_ID}'`;
   const sql2 = `INSERT INTO SHIPPING_COMPANY (Seller_ID,Company_name) values('${User_ID}',?)`;
   return new Promise((resolve, reject) => {
     db.query(sql, (err, result) => {

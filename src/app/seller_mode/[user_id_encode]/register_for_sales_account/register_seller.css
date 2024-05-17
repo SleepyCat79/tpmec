@@ -123,7 +123,7 @@
   margin-top: 10px;
   margin-bottom: 10px;
 }
-.Register_as_seller_body button {
+.Register_as_seller_body .btn_create_shop {
   width: 200px;
   height: 50px;
   background-color: #31572c;
@@ -132,8 +132,36 @@
   font-size: 20px;
   color: #fff;
 }
-.Register_as_seller_body button:hover {
+.Register_as_seller_body .btn_create_shop:hover {
   background-color: #237943;
   animation: slide 1s linear infinite;
   cursor: pointer;
+}
+
+.btn_delete_image {
+  background-color: none;
+  cursor: pointer;
+}
+
+.choose_shop_image_container {
+  display: flex;
+  flex-direction: column;
+}
+
+.img_array_choose_seller_image {
+  display: flex;
+  flex-direction: column;
+}
+
+.img_container_choose_seller_image {
+  height: 30vh;
+  width: 30vw;
+  position: relative;
+}
+.input_address_seller input {
+  width: 100%;
+  height: 35px;
+  border: 2px solid #31572c;
+  border-radius: 2px;
+  padding: 3px;
 }

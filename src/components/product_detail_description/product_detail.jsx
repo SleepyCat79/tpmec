@@ -73,7 +73,7 @@ export default function Product_detail_description({ user_id, product_id }) {
       <p className="product_detail_product_name">{product.Product_title}</p>
       <div className="product_detail_seller">
         <div className="product_detail_seller_img_contaienr">
-          <Image src="/next.svg" alt="seller_img" fill="true" />
+          <Image src={seller.Shop_image} alt="seller_img" fill="true" />
         </div>
         <div className="product_detail_seller_in4">
           <div>
@@ -83,7 +83,7 @@ export default function Product_detail_description({ user_id, product_id }) {
               width={15}
               alt="location icon"
             />
-            <p>{seller.Phone_Number}</p>
+            <p>{seller.Shop_address}</p>
           </div>
           <button className="btn_visit_shop" onClick={visitShop}>
             <p className="product_detail_seller_name">{seller.Shop_name}</p>

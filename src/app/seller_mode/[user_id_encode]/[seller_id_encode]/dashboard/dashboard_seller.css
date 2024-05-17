@@ -1,5 +1,5 @@
 .dashboard_seller {
-  padding-top: 100px;
+  padding-top: 10px;
   padding-left: 200px;
   background-color: #e7e7e3;
   position: fixed;
@@ -27,6 +27,7 @@
   flex-direction: row;
   width: 100%;
   justify-content: space-between;
+  align-items: center;
 }
 .dashboard_header p {
   font-weight: 600;

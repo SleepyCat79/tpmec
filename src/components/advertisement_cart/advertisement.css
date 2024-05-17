@@ -46,3 +46,17 @@
   cursor: pointer;
   text-transform: uppercase;
 }
+
+.shopNameAdvertisementCart {
+  position: absolute;
+  background-color: black;
+  color: white;
+  border-radius: 20px;
+  padding: 5px;
+  top: 10px;
+  left: 10px;
+}
+
+.shopNameAdvertisementCart h3 {
+  margin: 4px;
+}

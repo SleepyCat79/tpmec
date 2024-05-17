@@ -25,15 +25,15 @@ export default function Product_cart({ product, userID }) {
         </div>
         <div className="product_in4_in_cart">
           <p className="product_name_cart">{product.productName}</p>
-          <div className="location_product_cart">
+          {/* <div className="location_product_cart">
             <Image
               src={"/location_icon.png"}
               height={15}
               width={15}
               alt="Location Icon"
             />
-            <p>{product.location}</p>
-          </div>
+            <p>{product.Shop_address}</p>
+          </div> */}
           <div className="price_container_cart">
             <div>
               <p>{product.unit}</p>
@@ -50,9 +50,6 @@ export default function Product_cart({ product, userID }) {
         )}
       </div>
 
-      <button className="like_btn_cart_product">
-        <Image src={"/heart_icon.png"} height={20} width={20} alt="Like Icon" />
-      </button>
       <div className="overlay_cart_product">
         <button className="detail-button_cart_product" onClick={show_details}>
           詳細を表示

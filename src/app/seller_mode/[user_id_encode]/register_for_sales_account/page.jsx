@@ -5,6 +5,7 @@ import AWS from "aws-sdk";
 import "./register_seller.css";
 import { useRouter } from "next/navigation";
 import { Allerta } from "next/font/google";
+import Image from "next/image";
 AWS.config.update({
   accessKeyId: process.env.NEXT_PUBLIC_AWS_ACCESS_KEY_ID,
   secretAccessKey: process.env.NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY,
@@ -16,8 +17,36 @@ export default function page({ params }) {
     new AWS.CognitoIdentityServiceProvider();
 
   const route = useRouter();
+  const s3 = new AWS.S3();
+
   const [isRegister, setIsRegister] = useState(false);
   const [errMsg, setErrMsg] = useState("");
+  const [images, setImages] = useState([]);
+  const [selectedFiles, setSelectedFiles] = useState([]);
+  const [shopAddress, setShopAddress] = useState("");
+
+  const handleImageChange = (e) => {
+    const newSelectedFiles = Array.from(e.target.files);
+    setSelectedFiles((prevFiles) => [...prevFiles, ...newSelectedFiles]);
+
+    const fileReaders = newSelectedFiles.map((file) => {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    });
+
+    Promise.all(fileReaders)
+      .then((newImages) => {
+        setImages((prevImages) => [...prevImages, ...newImages]);
+      })
+      .catch((error) => {
+        console.error("Error reading files:", error);
+      });
+  };
+
   const [isCheck, setIsCheck] = useState(false);
   const [shopName, setShopName] = useState("");
   async function handleCreateShop() {
@@ -29,6 +58,29 @@ export default function page({ params }) {
       // handle with server create shop
       // navigate to shop page
       setErrMsg("");
+
+      // Upload files to S3 and get their URLs
+      const imageUrls = await Promise.all(
+        selectedFiles.map((file) => {
+          const uploadParams = {
+            Bucket: "tpmec", // replace with your bucket name
+            Key: file.name, // file name to use for S3 object
+            Body: file,
+            ACL: "public-read", // if you want the file to be publicly accessible
+          };
+
+          return s3
+            .upload(uploadParams)
+            .promise()
+            .then((data) => data.Location)
+            .catch((err) => {
+              console.error("Error uploading file:", err);
+              return null;
+            });
+        })
+      );
+      const validImageUrls = imageUrls.filter((url) => url !== null);
+      console.log("Image URLs:", validImageUrls);
       alert("Create shop success");
       const shopName_encode = encodeURIComponent(shopName.replace(/\s/g, ""));
       const res = await fetch("/api/seller/information", {
@@ -43,6 +95,8 @@ export default function page({ params }) {
             "Default Shipping Company 1",
             "Default Shipping Company 2",
           ],
+          shopImg: validImageUrls[0],
+          shopAddress: shopAddress,
         }),
       });
       if (res.ok) {
@@ -103,12 +157,43 @@ export default function page({ params }) {
               onClick={() => setIsCheck(!isCheck)}
             />
             <div>
-              I have read and accepted the {user_id_encode}
+              I have read and accepted the
               <a href="#">Terms and Conditions</a>
             </div>
           </div>
+          <div className="input_address_seller">
+            <h3>Your shop's address</h3>
+            <input
+              type="text"
+              placeholder="Ex: Tokyo 123 street doraemon"
+              value={shopAddress}
+              onChange={(e) => setShopAddress(e.target.value)}
+            ></input>
+          </div>
+          <div className="choose_shop_image_container">
+            <h3> Your Shop's Profile</h3>
+            {images.length === 0 && (
+              <input type="file" multiple onChange={handleImageChange} />
+            )}
+            <div className="img_array_choose_seller_image">
+              {images.map((image, index) => (
+                <div className="img_container_choose_seller_image" key={index}>
+                  <Image src={image} alt={`Product ${index + 1}`} fill="true" />
+                </div>
+              ))}
+            </div>
+            <button
+              onClick={() => setImages(images.filter((_, i) => i !== index))}
+              className="btn_delete_image"
+            >
+              Delete
+            </button>
+          </div>
+
           <p>{errMsg}</p>
-          <button onClick={handleCreateShop}>CREATE SHOP</button>
+          <button onClick={handleCreateShop} className="btn_create_shop">
+            CREATE SHOP
+          </button>
         </div>
       )}
     </div>
