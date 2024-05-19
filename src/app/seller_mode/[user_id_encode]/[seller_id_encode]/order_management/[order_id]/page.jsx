@@ -1,5 +1,4 @@
 "use client";
-import "../../checkout/checkout.css";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 
