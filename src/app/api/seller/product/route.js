@@ -10,10 +10,13 @@ export async function POST(req) {
     productDescription,
     productOptionList, // list option [{optionName,optionPrice}]
     productImageList, //list image [{imageURL}]
+    productDescriptionList, //list description [{title,content}]
     sellerID,
+    categoryID,
   } = data;
-  const sql1 = `call Add_Product('${sellerID}','${productTitle}','${productDescription}')`;
-  const sql2 = `call Add_Product_Option(?,?,?,?)`; /// (productID,optionName,optionPrice,optionNumber)
+  const sql1 = `call Add_Product('${sellerID}','${productTitle}','${productDescription}',${categoryID})`; /// (sellerID,productTitle,productDescription,categoryID)
+  const sql2 = `call Add_Product_Option(?,?,?,?,?)`; /// (productID,optionName,optionPrice,optionNumber)
+  const sql4 = `call Add_Product_Detail_Description(?,?,?,?)`; /// (productID,title,content,descriptionNumber)
   const sql3 = `call Add_Product_Image(?,?)`; /// (productID,imageURL)
   return new Promise((resolve, reject) => {
     db.query(sql1, (err, result) => {
@@ -32,7 +35,13 @@ export async function POST(req) {
             productOptionList.forEach((option, index) => {
               db.query(
                 sql2,
-                [productID, option.optionName, option.optionPrice, index],
+                [
+                  productID,
+                  option.optionName,
+                  option.optionPrice,
+                  optionQuantity,
+                  index,
+                ],
                 (err, result) => {
                   if (err) {
                     console.log(err);
@@ -49,6 +58,19 @@ export async function POST(req) {
                   reject(NextResponse.error(err));
                 }
               });
+            });
+
+            productDescriptionList.forEach((description, index) => {
+              db.query(
+                sql4,
+                [productID, description.title, description.content, index],
+                (err, result) => {
+                  if (err) {
+                    console.log(err);
+                    reject(NextResponse.error(err));
+                  }
+                }
+              );
             });
 
             resolve(
