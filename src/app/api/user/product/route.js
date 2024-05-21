@@ -103,3 +103,19 @@ export async function POST(req) {
     });
   });
 }
+
+export async function DELETE(req) {
+  const data = await req.json();
+  const { product_id, user_id } = data;
+  const sql = `DELETE FROM PRODUCT_LIKED WHERE Product_ID=${product_id} AND User_ID='${user_id}'`;
+  return new Promise((resolve, reject) => {
+    db.query(sql, (err, result) => {
+      if (err) {
+        console.log(err);
+        reject(err);
+      } else {
+        resolve(NextResponse.json({ message: "Product unliked" }));
+      }
+    });
+  });
+}

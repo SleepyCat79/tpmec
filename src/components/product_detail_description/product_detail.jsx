@@ -12,37 +12,93 @@ export default function Product_detail_description({ user_id, product_id }) {
   const [isLoading, setIsLoading] = useState(true); // Add this line
   const [option, setOption] = useState([]);
   const [seller, setSeller] = useState({});
-  const comments = [
-    {
-      date: "2022-01-01",
-      content:
-        "届きました♪小ぶりですけど、皮は薄くて食べやすくとても甘い美味しいみかんでした。ありがとうございました。ご馳走様でした😋",
-      image: "https://tpms3.s3.ap-southeast-2.amazonaws.com/f_avif+(3).avif",
-      name: "User 1",
-      avatar: "https://tpms3.s3.ap-southeast-2.amazonaws.com/9.jpg",
-    },
-    {
-      date: "2022-01-02",
-      content: "This is another comment",
-      image: "https://tpms3.s3.ap-southeast-2.amazonaws.com/f_avif+(3).avif",
-      name: "User 2",
-      avatar: "https://tpms3.s3.ap-southeast-2.amazonaws.com/9.jpg",
-    },
-    // Add more comments as needed
-  ];
+  const [liked, setLiked] = useState(false);
+  const [comments, setComment] = useState({
+    date: "",
+    content: "",
+    image: "",
+    name: "",
+    avatar: "",
+  });
   useEffect(() => {
-    fetch(`/api/user/product?product_id=${product_id}`)
+    fetch(`/api/user/product?product_id=${product_id}&user_id=${user_id}`)
       .then((response) => response.json())
       .then((data) => {
-        setProduct(data.product);
+        console.log(data);
+        setProduct(data);
         setOption(data.options);
         setSeller(data.seller);
-        setIsLoading(false); // Add this line
+        setIsLoading(false);
+        if (data.isLiked === 1) {
+          setLiked(true);
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+
+    fetch(`/api/user/comment?product_id=${product_id}`)
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        setComment(
+          data.map((item) => ({
+            date: item.Comment_date,
+            content: item.Comment,
+            image: item.Comment_image,
+            name: item.user.LName,
+            avatar: "https://tpms3.s3.ap-southeast-2.amazonaws.com/9.jpg",
+          }))
+        );
       })
       .catch((error) => {
         console.error("Error:", error);
       });
   }, [product_id]);
+  async function handleLikeProduct() {
+    fetch("/api/user/product", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ product_id, user_id }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data.message);
+        setLiked(true);
+        setProduct((prevProduct) => ({
+          ...prevProduct,
+          likes: prevProduct.likes + 1,
+        })); // Update likes
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  }
+
+  async function unlikedProduct() {
+    fetch("/api/user/product", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ product_id, user_id }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data.message);
+        setLiked(false);
+        setProduct((prevProduct) => ({
+          ...prevProduct,
+          likes: prevProduct.likes - 1,
+        })); // Update likes
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  }
+
   useEffect(() => {
     console.log(product);
     console.log(option);
@@ -161,6 +217,16 @@ export default function Product_detail_description({ user_id, product_id }) {
         </select>
       </div> */}
       <div className="product_detail_btn">
+        <p style={{ right: "40px", position: "relative", fontWeight: "bold" }}>
+          Total like : {product.likes}
+        </p>
+        <button onClick={liked ? unlikedProduct : handleLikeProduct}>
+          <Image
+            src={liked ? "/heart_liked.png" : "/heart.png"}
+            width={30}
+            height={30}
+          />
+        </button>
         <button
           className="product_detail_add_to_cart"
           onClick={handleAddToCart}

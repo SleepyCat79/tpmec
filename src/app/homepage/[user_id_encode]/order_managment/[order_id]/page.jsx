@@ -2,19 +2,93 @@
 import "../../checkout/checkout.css";
 import { useEffect, useState } from "react";
 import Image from "next/image";
-
+import AWS from "aws-sdk";
+AWS.config.update({
+  accessKeyId: process.env.NEXT_PUBLIC_AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY,
+  region: process.env.NEXT_PUBLIC_AWS_REGION,
+});
 export default function CheckoutPage({ params }) {
   const user_id_encode = params.user_id_encode;
+  const s3 = new AWS.S3();
+  const [images, setImages] = useState([]);
+  const [selectedFiles, setSelectedFiles] = useState([]);
   const [orderDetails, setOrderDetails] = useState(null);
+  const [comment, setComment] = useState("");
   const path = window.location.pathname;
   const pathParts = path.split("/");
   const [address, setAddress] = useState("");
+  const [iscomplete, setIsComplete] = useState("");
   const Order_ID = pathParts[pathParts.length - 1];
   const [user_information, setUserInformation] = useState({
     user_name: "",
     user_phone: "",
     user_address: [],
   });
+  const handleImageChange = (e) => {
+    const newSelectedFiles = Array.from(e.target.files);
+    setSelectedFiles((prevFiles) => [...prevFiles, ...newSelectedFiles]);
+
+    const fileReaders = newSelectedFiles.map((file) => {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    });
+
+    Promise.all(fileReaders)
+      .then((newImages) => {
+        setImages((prevImages) => [...prevImages, ...newImages]);
+      })
+      .catch((error) => {
+        console.error("Error reading files:", error);
+      });
+  };
+  async function handlecomment() {
+    const imageUrls = await Promise.all(
+      selectedFiles.map((file) => {
+        const uploadParams = {
+          Bucket: "tpms3", // replace with your bucket name
+          Key: file.name, // file name to use for S3 object
+          Body: file,
+          ACL: "public-read", // if you want the file to be publicly accessible
+        };
+
+        return s3
+          .upload(uploadParams)
+          .promise()
+          .then((data) => data.Location)
+          .catch((err) => {
+            console.error("Error uploading file:", err);
+            return null;
+          });
+      })
+    );
+    const validImageUrls = imageUrls.filter((url) => url !== null);
+    console.log("Image URLs:", validImageUrls);
+    const date = new Date();
+    fetch("/api/user/comment", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        Product_ID: orderDetails.orderItems[0].Product_ID,
+        User_ID: user_id_encode,
+        Comment: comment,
+        Comment_date: date,
+        image: validImageUrls,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        alert("Binh luan thanh cong");
+      })
+      .catch((error) => console.error(error));
+  }
   useEffect(() => {
     async function fetchUserInformation() {
       const response = await fetch(
@@ -34,6 +108,7 @@ export default function CheckoutPage({ params }) {
     fetch(`/api/user/order?order_id=${Order_ID}`)
       .then((response) => response.json())
       .then((data) => {
+        setIsComplete(data.body.order.Status);
         const orderData = data.body.order;
         setAddress(data.body.order.Address);
         const orderItems = data.body.order_items;
@@ -91,9 +166,11 @@ export default function CheckoutPage({ params }) {
       </div>
       <div className="field_bar_checkout">
         <div>
-          <p>San Pham</p>
+          <p>Hình ảnh</p>
+          <p>Tên</p>
         </div>
         <div>
+          <p>Option</p>
           <p>Don gia</p>
           <p>So luong</p>
           <p>Thanh tien</p>
@@ -110,7 +187,7 @@ export default function CheckoutPage({ params }) {
                 height={100}
               />
               <div className="product_information_checkout">
-                <p>{order.productDetails.product.Product_title}</p>
+                <p>{order.productDetails.Product_title}</p>
                 <p>
                   {
                     order.productDetails.options[order.Option_number]
@@ -139,6 +216,48 @@ export default function CheckoutPage({ params }) {
           <p>Tong tien hang: </p> <p>{totalPrice} 円</p>
         </div>
       </div>
+      {iscomplete === "Complete" && (
+        <div>
+          <div style={{ display: "flex", flexDirection: "row" }}>
+            <textarea
+              placeholder="Comment"
+              style={{ width: "500px", height: "100px", marginRight: "20px" }}
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+            ></textarea>
+            <div className="choose_shop_image_container">
+              <h3> Them hinh anh</h3>
+              {images.length === 0 && (
+                <input type="file" multiple onChange={handleImageChange} />
+              )}
+              <div className="img_array_choose_seller_image">
+                {images.map((image, index) => (
+                  <div
+                    className="img_container_choose_seller_image"
+                    key={index}
+                  >
+                    <Image
+                      src={image}
+                      alt={`Product ${index + 1}`}
+                      width={120}
+                      height={120}
+                    />
+                  </div>
+                ))}
+              </div>
+              <button
+                onClick={() => setImages(images.filter((_, i) => i !== index))}
+                className="btn_delete_image"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+          <button style={{ marginTop: "20px" }} onClick={handlecomment}>
+            Them binh luan
+          </button>
+        </div>
+      )}
     </div>
   );
 }

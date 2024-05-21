@@ -68,6 +68,7 @@
 
 .field_bar_checkout div:first-child {
   margin-left: 20px;
+  justify-content: space-around;
   font-size: 20px;
 }
 

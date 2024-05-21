@@ -40,9 +40,9 @@ export async function GET(req) {
 
 export async function POST(req) {
   const data = await req.json();
-  const { Product_ID, User_ID, Comment, Comment_date } = data;
+  const { Product_ID, User_ID, Comment, Comment_date, image } = data;
   console.log(data);
-  const sql = `insert into PRODUCT_COMMENT (Product_ID, User_ID, Comment, Comment_date) values (${Product_ID}, "${User_ID}", "${Comment}", "${Comment_date}")`;
+  const sql = `insert into PRODUCT_COMMENT (Product_ID, User_ID, Comment, Comment_date, Comment_image) values (${Product_ID}, "${User_ID}", "${Comment}", "${Comment_date}","${image}")`;
   return new Promise((resolve, reject) => {
     db.query(sql, (err, result) => {
       if (err) {
