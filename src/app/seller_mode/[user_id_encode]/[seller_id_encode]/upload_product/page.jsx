@@ -8,10 +8,13 @@ AWS.config.update({
   secretAccessKey: process.env.NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY,
   region: process.env.NEXT_PUBLIC_AWS_REGION,
 });
-export default function ({ params }) {
+export default function Page({ params }) {
   const { seller_id_encode: sellerid } = params;
   const s3 = new AWS.S3();
-  const [rows, setRows] = useState([{ optionPrice: "", optionName: "" }]);
+  const [rows, setRows] = useState([
+    { optionPrice: "", optionName: "", optionQuantity: "" },
+  ]);
+  const [rows2, setRows2] = useState([{ title: "", content: "" }]);
   const [images, setImages] = useState([]);
   const [productname, setProductname] = useState("");
   const [description, setDescription] = useState("");
@@ -25,7 +28,7 @@ export default function ({ params }) {
       const imageUrls = await Promise.all(
         selectedFiles.map((file) => {
           const uploadParams = {
-            Bucket: "tpmec", // replace with your bucket name
+            Bucket: "tpms3", // replace with your bucket name
             Key: file.name, // file name to use for S3 object
             Body: file,
             ACL: "public-read", // if you want the file to be publicly accessible
@@ -54,7 +57,15 @@ export default function ({ params }) {
         optionPrice: Number(optionPrice), // convert string to number
       }));
       console.log("Product Option List:", productOptionList);
+      const body = {
+        productTitle: productname,
+        productDescription: description,
+        productOptionList: rows, // assuming rows is an array of options
+        productImageList, // add your list of images here
+        sellerID: sellerid, // replace with actual sellerID
+      };
 
+      console.log(body);
       // Now you can use validImageUrls in your fetch body
       const res = await fetch("/api/seller/product", {
         method: "POST",
@@ -111,7 +122,7 @@ export default function ({ params }) {
   };
 
   const addRow = () => {
-    setRows([...rows, { optionPrice: "", optionName: "" }]);
+    setRows([...rows, { optionPrice: "", optionName: "", optionQuantity: "" }]);
   };
 
   const updateRow = (index, field, value) => {
@@ -125,6 +136,21 @@ export default function ({ params }) {
     newRows.splice(index, 1);
     setRows(newRows);
   };
+  const addRow2 = () => {
+    setRows2([...rows2, { title: "", content: "" }]);
+  };
+
+  const updateRow2 = (index, field, value) => {
+    const newRows = [...rows2];
+    newRows[index][field] = value;
+    setRows2(newRows);
+  };
+
+  const deleteRow2 = (index) => {
+    const newRows = [...rows2];
+    newRows.splice(index, 1);
+    setRows2(newRows);
+  };
 
   return (
     <div className="upload_product_big_container">
@@ -136,6 +162,7 @@ export default function ({ params }) {
             type="text"
             value={productname}
             onChange={(e) => setProductname(e.target.value)}
+            maxLength={200}
           />
         </div>
         <div className="input_price">
@@ -146,6 +173,7 @@ export default function ({ params }) {
                 <th>Price</th>
                 <th>¥ per</th>
                 <th>Option</th>
+                <th>Quantity</th>
                 <th>Action</th>
               </tr>
             </thead>
@@ -174,6 +202,16 @@ export default function ({ params }) {
                     />
                   </td>
                   <td>
+                    <input
+                      type="text"
+                      value={row.optionQuantity}
+                      onChange={(e) =>
+                        updateRow(index, "optionQuantity", e.target.value)
+                      }
+                      placeholder="Ex: 100"
+                    />
+                  </td>
+                  <td>
                     <button onClick={() => deleteRow(index)}>Delete</button>
                   </td>
                 </tr>
@@ -183,11 +221,56 @@ export default function ({ params }) {
           <button onClick={addRow}>Add row</button>
         </div>
         <div className="input_description">
-          <h3>Description</h3>
+          <h3>General Description</h3>
           <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            value={description.substring(0, 200)}
+            onChange={(e) => setDescription(e.target.value.substring(0, 200))}
+            maxLength={200}
           />
+          <div className="input_price2">
+            <h3>Specific Description</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>...</th>
+                  <th>Content</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((row, index) => (
+                  <tr key={index}>
+                    <td>
+                      <input
+                        type="text"
+                        value={row.optionPrice}
+                        onChange={(e) =>
+                          updateRow(index, "optionPrice", e.target.value)
+                        }
+                        placeholder="Ex: 100"
+                      />
+                    </td>
+                    <td></td>
+                    <td>
+                      <input
+                        type="text"
+                        value={row.optionName}
+                        onChange={(e) =>
+                          updateRow(index, "optionName", e.target.value)
+                        }
+                        placeholder="Ex: package of 1.5 kg"
+                      />
+                    </td>
+                    <td>
+                      <button onClick={() => deleteRow(index)}>Delete</button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <button onClick={addRow}>Add row</button>
+          </div>
         </div>
         <div>
           <h3>Product Image</h3>
