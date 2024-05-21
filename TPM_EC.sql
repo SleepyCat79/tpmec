@@ -26,7 +26,11 @@ CREATE TABLE PRODUCT(
         Seller_ID VARCHAR(255),
         Product_title VARCHAR(255),
         Product_description VARCHAR(255),
-        foreign key(Seller_ID) references USER(User_ID)
+        totalLike int,
+        Category_ID INT,
+        foreign key(Seller_ID) references USER(User_ID),
+        foreign key(Category_ID) references CATEGORY(Category_ID)
+
 );
 
 CREATE TABLE PRODUCT_OPTION(
@@ -35,7 +39,18 @@ CREATE TABLE PRODUCT_OPTION(
         Option_price DECIMAL(10,2),
         Option_number INT,
         IsValid boolean,
+        Quantity INT,
+        QuantityOfGoodsSold INT,
         primary key(Product_ID,Option_number),
+        foreign key(Product_ID) references PRODUCT(Product_ID) on delete cascade
+);
+
+CREATE TABLE PRODUCT_DETAIL_DESCRIPTION(
+        Product_ID INT,
+        Title TEXT,
+        Content TEXT,
+        Description_number INT,
+        primary key(Product_ID,Description_number),
         foreign key(Product_ID) references PRODUCT(Product_ID) on delete cascade
 );
 
@@ -57,6 +72,15 @@ CREATE TABLE PRODCUT_RATING(
 CREATE TABLE PRODUCT_LIKED(
 		Product_ID INT,
         User_ID varchar(255),
+        foreign key (Product_ID) references PRODUCT(Product_ID) on delete cascade,
+        foreign key (User_ID) references USER(User_ID) on delete cascade
+);
+
+CREATE TABLE PRODUCT_COMMENT(
+        Product_ID INT,
+        User_ID varchar(255),
+        Comment TEXT,
+        Comment_date DATE,
         foreign key (Product_ID) references PRODUCT(Product_ID) on delete cascade,
         foreign key (User_ID) references USER(User_ID) on delete cascade
 );
@@ -103,6 +127,11 @@ CREATE TABLE SHIPPING_COMPANY (
 		Seller_ID varchar(255),
         Company_name varchar(255) ,
         foreign key (Seller_ID) references USER(User_ID)
+);
+
+CREATE TABLE CATEGORY(
+        Category_ID INT AUTO_INCREMENT PRIMARY KEY,
+        Category_name varchar(255)
 );
 
 ALTER TABLE PRODUCT ADD FULLTEXT (Product_title,Product_description)
@@ -187,11 +216,12 @@ DELIMITER $$
 CREATE PROCEDURE Add_Product(
     IN p_Seller_ID VARCHAR(255),
     IN p_Product_Title VARCHAR(255),
-    IN p_Product_Description VARCHAR(255)
+    IN p_Product_Description VARCHAR(255),
+    IN p_Category_ID INT
 )
 BEGIN
-    INSERT INTO PRODUCT (Seller_ID, Product_title, Product_description)
-    VALUES (p_Seller_ID, p_Product_Title, p_Product_Description);
+    INSERT INTO PRODUCT (Seller_ID, Product_title, Product_description, Category_ID)
+    VALUES (p_Seller_ID, p_Product_Title, p_Product_Description, p_Category_ID);
 END $$
 
 DELIMITER ;
@@ -203,11 +233,28 @@ CREATE PROCEDURE Add_Product_Option(
     IN p_Product_ID INT,
     IN p_Option_Name VARCHAR(255),
     IN p_Option_Price DECIMAL(10,2),
+    IN p_Quantity INT,
     IN p_Option_Number INT
 )
 BEGIN
-    INSERT INTO PRODUCT_OPTION (Product_ID, Option_name, Option_price, Option_number, IsValid)
-    VALUES (p_Product_ID, p_Option_Name, p_Option_Price, p_Option_Number, TRUE);
+    INSERT INTO PRODUCT_OPTION (Product_ID, Option_name, Option_price, Option_number, Quantity, QuantityOfGoodsSold, IsValid)
+    VALUES (p_Product_ID, p_Option_Name, p_Option_Price, p_Option_Number,p_Quantity,0, TRUE);
+END $$
+
+DELIMITER ;
+
+## procedure insert product detail description
+DELIMITER $$
+
+CREATE PROCEDURE Add_Product_Detail_Description(
+    IN p_Product_ID INT,
+    IN p_Title TEXT,
+    IN p_Content TEXT,
+    IN p_Description_number INT
+)
+BEGIN
+    INSERT INTO PRODUCT_DETAIL_DESCRIPTION (Product_ID, Title, Content, Description_number)
+    VALUES (p_Product_ID, p_Title, p_Content, p_Description_number);
 END $$
 
 DELIMITER ;
