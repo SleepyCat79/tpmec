@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Product_cart_seller from "@/components/product_cart_seller/product_cart_seller";
 import "./product_list.css";
-export default function ({ params }) {
+export default function Page({ params }) {
   const { user_id_encode, seller_id_encode } = params;
   const [products, setProducts] = useState([]);
   useEffect(() => {
@@ -16,7 +16,7 @@ export default function ({ params }) {
     <div className="product_list_seller_big_container">
       <div className="product_list_container">
         <div className="product_list_header_seller">
-          <h2>Shop's product</h2>
+          <h2>Products of shop</h2>
 
           <h4>Your shop currently have : {products.length} </h4>
         </div>

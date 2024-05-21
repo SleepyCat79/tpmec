@@ -307,7 +307,7 @@ export default function Page({ params }) {
       </div>
       {cart.shop.map((shop, shopIndex) => {
         return (
-          <div className="cart_shop_container">
+          <div className="cart_shop_container" key={shopIndex}>
             <div className="cart_shop_header">
               <input
                 type="checkbox"
@@ -318,7 +318,7 @@ export default function Page({ params }) {
             </div>
             {shop.product.map((product, productIndex) => {
               return (
-                <div className="cart_product_container">
+                <div className="cart_product_container" key={productIndex}>
                   <div className="cart_prodcut_container_left_section">
                     <input
                       type="checkbox"

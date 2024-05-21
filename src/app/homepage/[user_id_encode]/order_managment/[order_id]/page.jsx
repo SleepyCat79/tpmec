@@ -99,9 +99,9 @@ export default function CheckoutPage({ params }) {
           <p>Thanh tien</p>
         </div>
       </div>
-      {orderDetails?.orderItems?.map((order) => {
+      {orderDetails?.orderItems?.map((order, index) => {
         return (
-          <div className="product_checkout">
+          <div className="product_checkout" key={index}>
             <div className="product_checkout_left_section">
               <Image
                 src={order.productDetails.images[0].Image_url}

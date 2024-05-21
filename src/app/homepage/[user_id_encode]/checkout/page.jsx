@@ -221,15 +221,15 @@ export default function CheckoutPage({ params }) {
       </div>
       {cart.shop &&
         Array.isArray(cart.shop) &&
-        cart.shop.map((shop) => {
+        cart.shop.map((shop, index) => {
           return (
-            <div className="shop_checkout">
+            <div className="shop_checkout" key={index}>
               <div className="shop_checkout_header">
                 <p className="checkout_shop_name">{shop.shop_name}</p>
               </div>
-              {shop.product.map((product) => {
+              {shop.product.map((product, productIndex) => {
                 return (
-                  <div className="product_checkout">
+                  <div className="product_checkout" key={productIndex}>
                     <div className="product_checkout_left_section">
                       <Image
                         src={product.product_img}

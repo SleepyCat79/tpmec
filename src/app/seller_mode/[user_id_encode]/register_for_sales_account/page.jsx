@@ -11,7 +11,7 @@ AWS.config.update({
   secretAccessKey: process.env.NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY,
   region: process.env.NEXT_PUBLIC_AWS_REGION,
 });
-export default function page({ params }) {
+export default function Page({ params }) {
   const { user_id_encode } = params;
   const cognitoidentityserviceprovider =
     new AWS.CognitoIdentityServiceProvider();
@@ -63,7 +63,7 @@ export default function page({ params }) {
       const imageUrls = await Promise.all(
         selectedFiles.map((file) => {
           const uploadParams = {
-            Bucket: "tpmec", // replace with your bucket name
+            Bucket: "tpms3", // replace with your bucket name
             Key: file.name, // file name to use for S3 object
             Body: file,
             ACL: "public-read", // if you want the file to be publicly accessible
@@ -142,7 +142,7 @@ export default function page({ params }) {
       {isRegister && (
         <div className="Register_as_seller_body">
           <div className="register_as_seller_form">
-            <p className="header_register_as_seller">Your shop's name</p>
+            <p className="header_register_as_seller">Your shop is name</p>
             <input
               type="text"
               placeholder="Enter your shop's name"
@@ -162,7 +162,7 @@ export default function page({ params }) {
             </div>
           </div>
           <div className="input_address_seller">
-            <h3>Your shop's address</h3>
+            <h3>Your shop is address</h3>
             <input
               type="text"
               placeholder="Ex: Tokyo 123 street doraemon"
@@ -171,7 +171,7 @@ export default function page({ params }) {
             ></input>
           </div>
           <div className="choose_shop_image_container">
-            <h3> Your Shop's Profile</h3>
+            <h3> Your Shop is Profile</h3>
             {images.length === 0 && (
               <input type="file" multiple onChange={handleImageChange} />
             )}

@@ -5,7 +5,7 @@ import Dashboard_tag from "@/components/dashboard_tag/dashboard_tag";
 import LineGraph from "@/components/graph_dashboard/graph_dashboard";
 import BestSeller from "@/components/best_seller_dashboard/best_seller";
 import Image from "next/image";
-export default function page({ params }) {
+export default function Page({ params }) {
   const currentDate = new Date();
   const { user_id_encode, seller_id_encode } = params;
   const [totalOrders, setTotalOrders] = useState(0);

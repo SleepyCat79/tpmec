@@ -36,7 +36,7 @@ export default function RegisterInformation({ params }) {
     }
 
     const userAttributesParams = {
-      UserPoolId: "ap-southeast-2_zGM5cYWRX",
+      UserPoolId: process.env.NEXT_PUBLIC_AWS_Userpool_ID,
       Username: email,
       UserAttributes: [
         {
@@ -74,13 +74,13 @@ export default function RegisterInformation({ params }) {
     );
 
     const passwordParams = {
-      UserPoolId: "ap-southeast-2_zGM5cYWRX",
+      UserPoolId: process.env.NEXT_PUBLIC_AWS_Userpool_ID,
       Username: email,
       Password: password,
       Permanent: true,
     };
     const getUserParams = {
-      UserPoolId: "ap-southeast-2_zGM5cYWRX", // Your User Pool Id
+      UserPoolId: process.env.NEXT_PUBLIC_AWS_Userpool_ID, // Your User Pool Id
       Username: email, // The username of the user you want to get
     };
     cognito.adminSetUserPassword(passwordParams, function (err, data) {

@@ -5,7 +5,7 @@ let db;
 function connectToDatabase() {
   if (!db) {
     db = mysql2.createConnection({
-      host: "tpmec.czsyoaugy6di.ap-southeast-2.rds.amazonaws.com",
+      host: "tpmec.clma0msasvlh.ap-southeast-2.rds.amazonaws.com",
       port: "3306",
       user: "admin",
       password: "tpmec123",

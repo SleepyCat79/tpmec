@@ -3,7 +3,7 @@ import "./page.css";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-export default function ({ params }) {
+export default function Page({ params }) {
   const [orderWatingConfirm, setOrderWatingConfirm] = useState([]);
   const route = useRouter();
 

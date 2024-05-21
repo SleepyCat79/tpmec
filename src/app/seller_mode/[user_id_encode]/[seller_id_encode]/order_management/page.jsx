@@ -1,7 +1,7 @@
 "use client";
 import "./order_management.css";
 import { useState, useEffect } from "react";
-export default function ({ params }) {
+export default function Page({ params }) {
   const [order, setOrder] = useState([]);
   const [indexUpdate, setIndexUpdate] = useState(-1);
   const seller_id = params.seller_id_encode;
@@ -112,7 +112,7 @@ export default function ({ params }) {
             </thead>
             <tbody>
               {order.map((item, index) => (
-                <tr>
+                <tr key={index}>
                   <td>{index + 1}</td>
                   <td>{item.Order_ID}</td>
                   <td
@@ -175,7 +175,7 @@ export default function ({ params }) {
                     )}
                   </td>
                   <td>
-                    {item.Status !== "Complete" && (
+                    {(item.Status !== "Complete" || indexUpdate === index) && (
                       <button onClick={() => onClick(index)}>
                         {indexUpdate === index ? "Save" : "Edit"}
                       </button>

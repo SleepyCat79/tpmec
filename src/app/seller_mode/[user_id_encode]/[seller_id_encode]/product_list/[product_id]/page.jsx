@@ -1,7 +1,7 @@
 "use client";
 import "../../upload_product/page.css";
 import { useState, useEffect } from "react";
-export default function page({ params }) {
+export default function Page({ params }) {
   const { user_id_encode, seller_id_encode, product_id } = params;
 
   const [product, setProduct] = useState(null);
