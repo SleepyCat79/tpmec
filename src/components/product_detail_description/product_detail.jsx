@@ -1,6 +1,6 @@
 "use client";
 import "./product_detail.css";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 export default function Product_detail_description({ user_id, product_id }) {
@@ -13,6 +13,7 @@ export default function Product_detail_description({ user_id, product_id }) {
   const [option, setOption] = useState([]);
   const [seller, setSeller] = useState({});
   const [liked, setLiked] = useState(false);
+  const [selectedTitle, setSelectedTitle] = useState(null);
   const [comments, setComment] = useState({
     date: "",
     content: "",
@@ -76,7 +77,9 @@ export default function Product_detail_description({ user_id, product_id }) {
         console.error("Error:", error);
       });
   }
-
+  function handleDetailClick(detail) {
+    setSelectedTitle(detail.Title);
+  }
   async function unlikedProduct() {
     fetch("/api/user/product", {
       method: "DELETE",
@@ -201,21 +204,7 @@ export default function Product_detail_description({ user_id, product_id }) {
           </button>
         </div>
       </div>
-      {/* <div className="product_detail_delivery_company">
-        <p>運送会社</p>
-        <select
-          value={selectedOptionDelivery}
-          onChange={(e) => setSelectedOptionDelivery(e.target.value)}
-        >
-          {product.delivery_option.map((option, index) => {
-            return (
-              <option key={index} value={option}>
-                {option}
-              </option>
-            );
-          })}
-        </select>
-      </div> */}
+
       <div className="product_detail_btn">
         <p style={{ right: "40px", position: "relative", fontWeight: "bold" }}>
           Total like : {product.likes}
@@ -239,6 +228,47 @@ export default function Product_detail_description({ user_id, product_id }) {
         <div>
           <p>{product.Product_description}</p>
         </div>
+      </div>
+      <div className="product_detail_description">
+        <table>
+          <tbody>
+            {product.description.map((detail, index) => (
+              <React.Fragment key={index}>
+                <tr onClick={() => handleDetailClick(detail)}>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      width: "100%",
+                      borderBottom: "1px solid grey",
+                    }}
+                  >
+                    <td style={{ fontWeight: "bold", color: "grey" }}>
+                      {detail.Title}
+                    </td>
+                    <td>
+                      {selectedTitle !== detail.Title && (
+                        <Image
+                          src={"/arrow.png"}
+                          width={24}
+                          height={24}
+                        ></Image>
+                      )}
+                    </td>
+                  </div>
+                </tr>
+                {selectedTitle === detail.Title && (
+                  <tr style={{ transition: "all 0.5s ease-in-out" }}>
+                    <td style={{ marginLeft: "10px", fontSize: "12px" }}>
+                      {detail.Content}
+                    </td>
+                  </tr>
+                )}
+                <div style={{ height: "20px" }} />
+              </React.Fragment>
+            ))}
+          </tbody>
+        </table>
       </div>
       <div className="comments_container">
         <h2>みんなの投稿</h2>

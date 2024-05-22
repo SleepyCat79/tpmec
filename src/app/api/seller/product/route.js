@@ -39,7 +39,7 @@ export async function POST(req) {
                   productID,
                   option.optionName,
                   option.optionPrice,
-                  optionQuantity,
+                  option.optionQuantity,
                   index,
                 ],
                 (err, result) => {

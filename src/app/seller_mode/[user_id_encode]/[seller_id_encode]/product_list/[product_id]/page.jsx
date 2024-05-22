@@ -14,12 +14,12 @@ export default function Page({ params }) {
     fetch(`/api/user/product?product_id=${product_id}`)
       .then((response) => response.json())
       .then((data) => {
-        setProduct(data.product);
-        setName(data.product.Product_title);
+        setProduct(data);
+        setName(data.Product_title);
         setRows(data.options);
         setImages(data.images);
 
-        setDescription(data.product.Product_description);
+        setDescription(data.Product_description);
       })
       .catch((error) => {
         console.error("Error:", error);

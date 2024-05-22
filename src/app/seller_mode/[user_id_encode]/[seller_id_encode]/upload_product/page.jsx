@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import React, { useState } from "react";
 import "./page.css";
 import AWS from "aws-sdk";
 
@@ -20,6 +20,19 @@ export default function Page({ params }) {
   const [description, setDescription] = useState("");
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [isWaiting, setIsWaiting] = useState(false);
+  const options = [
+    "野菜",
+    "果物",
+    "米・穀類",
+    "お茶",
+    "魚介類",
+    "肉",
+    "卵・乳",
+    "蜂蜜",
+    "加工食品",
+    "花・観葉植物",
+  ];
+  const [selectedOption, setSelectedOption] = useState("1");
   const submitproduct = async (e) => {
     setIsWaiting(true);
     console.log("Called");
@@ -52,9 +65,16 @@ export default function Page({ params }) {
         imageURL: url,
       }));
       console.log("Product Image List:", productImageList);
-      const productOptionList = rows.map(({ optionName, optionPrice }) => ({
-        optionName,
-        optionPrice: Number(optionPrice), // convert string to number
+      const productOptionList = rows.map(
+        ({ optionName, optionPrice, optionQuantity }) => ({
+          optionName,
+          optionPrice: Number(optionPrice), // convert string to number
+          optionQuantity: Number(optionQuantity), // convert string to number
+        })
+      );
+      const productDescriptionList = rows2.map(({ title, content }) => ({
+        title,
+        content,
       }));
       console.log("Product Option List:", productOptionList);
       const body = {
@@ -62,11 +82,12 @@ export default function Page({ params }) {
         productDescription: description,
         productOptionList: rows, // assuming rows is an array of options
         productImageList, // add your list of images here
+        productDescriptionList: rows2,
         sellerID: sellerid, // replace with actual sellerID
+        categoryID: selectedOption,
       };
 
       console.log(body);
-      // Now you can use validImageUrls in your fetch body
       const res = await fetch("/api/seller/product", {
         method: "POST",
         headers: {
@@ -77,7 +98,9 @@ export default function Page({ params }) {
           productDescription: description,
           productOptionList: rows, // assuming rows is an array of options
           productImageList, // add your list of images here
+          productDescriptionList: rows2,
           sellerID: sellerid, // replace with actual sellerID
+          categoryID: selectedOption,
         }),
       });
 
@@ -156,15 +179,41 @@ export default function Page({ params }) {
     <div className="upload_product_big_container">
       <div className="upload_product_container">
         <h3>Add new product to your shop</h3>
-        <div className="input_name">
-          <h3>Name</h3>
-          <input
-            type="text"
-            value={productname}
-            onChange={(e) => setProductname(e.target.value)}
-            maxLength={200}
-          />
+
+        <div style={{ display: "flex", flexDirection: "row" }}>
+          <div className="input_name">
+            <h3>Name</h3>
+            <input
+              type="text"
+              value={productname}
+              onChange={(e) => setProductname(e.target.value)}
+              maxLength={200}
+            />
+          </div>
+          <div
+            style={{
+              marginLeft: "60px",
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            <h3>Category</h3>
+            <select
+              value={selectedOption}
+              onChange={(e) => {
+                setSelectedOption(e.target.value);
+              }}
+              style={{ width: "200px", height: "40px" }}
+            >
+              {options.map((option, index) => (
+                <option key={index} value={index + 1}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
+
         <div className="input_price">
           <h3>Sale option</h3>
           <table>
@@ -239,14 +288,14 @@ export default function Page({ params }) {
                 </tr>
               </thead>
               <tbody>
-                {rows.map((row, index) => (
+                {rows2.map((row, index) => (
                   <tr key={index}>
                     <td>
                       <input
                         type="text"
-                        value={row.optionPrice}
+                        value={row.title}
                         onChange={(e) =>
-                          updateRow(index, "optionPrice", e.target.value)
+                          updateRow2(index, "title", e.target.value)
                         }
                         placeholder="Ex: 100"
                       />
@@ -255,21 +304,21 @@ export default function Page({ params }) {
                     <td>
                       <input
                         type="text"
-                        value={row.optionName}
+                        value={row.content}
                         onChange={(e) =>
-                          updateRow(index, "optionName", e.target.value)
+                          updateRow2(index, "content", e.target.value)
                         }
                         placeholder="Ex: package of 1.5 kg"
                       />
                     </td>
                     <td>
-                      <button onClick={() => deleteRow(index)}>Delete</button>
+                      <button onClick={() => deleteRow2(index)}>Delete</button>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
-            <button onClick={addRow}>Add row</button>
+            <button onClick={addRow2}>Add row</button>
           </div>
         </div>
         <div>
