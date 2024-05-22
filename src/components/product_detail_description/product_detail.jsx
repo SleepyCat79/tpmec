@@ -273,36 +273,37 @@ export default function Product_detail_description({ user_id, product_id }) {
       <div className="comments_container">
         <h2>みんなの投稿</h2>
         <h4>2505件</h4>
-        {comments.map((comment, index) => (
-          <div className="comments" key={index}>
-            <div className="comment_content">
-              <div style={{ display: "flex", flexDirection: "row" }}>
-                <Image
-                  style={{ borderRadius: "50%" }}
-                  src={comment.avatar}
-                  height={50}
-                  width={50}
-                  alt="avatar"
-                />
-                <div className="comment_user">
-                  <p>{comment.name}</p>
-                  <p>{comment.date}</p>
-                </div>
-              </div>
-              <p>{comment.content}</p>
-              {comment.image && (
-                <div className="comment_img">
+        {comments &&
+          comments.map((comment, index) => (
+            <div className="comments" key={index}>
+              <div className="comment_content">
+                <div style={{ display: "flex", flexDirection: "row" }}>
                   <Image
-                    src={comment.image}
-                    height={150}
-                    width={150}
-                    alt="comment"
+                    style={{ borderRadius: "50%" }}
+                    src={comment.avatar}
+                    height={50}
+                    width={50}
+                    alt="avatar"
                   />
+                  <div className="comment_user">
+                    <p>{comment.name}</p>
+                    <p>{comment.date}</p>
+                  </div>
                 </div>
-              )}
+                <p>{comment.content}</p>
+                {comment.image && (
+                  <div className="comment_img">
+                    <Image
+                      src={comment.image}
+                      height={150}
+                      width={150}
+                      alt="comment"
+                    />
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
       </div>
     </div>
   );
