@@ -10,15 +10,10 @@ export const metadata = {
 export default function RootLayout({ children, params }) {
   const { user_id_encode } = params;
   const user_id = decodeURIComponent(user_id_encode);
-  const totalCartMoney = 100;
-  const userName = "Hung Nguyen";
+
   return (
     <div>
-      <NavbarUser
-        userName={userName}
-        totalCartMoney={totalCartMoney}
-        userID={user_id}
-      />
+      <NavbarUser userID={user_id} />
       {children}
       <Footer />
     </div>

@@ -22,6 +22,8 @@ const poolData = {
 };
 
 export default function NavbarUser({ userID }) {
+  if (userID == "guess") return null;
+
   const [isSeller, setIsSeller] = useState(false);
 
   const [user, setUser] = useState({});
