@@ -5,7 +5,7 @@ export default function CategoryCart({ category, userID }) {
   const router = useRouter();
   function handleCategoryClick() {
     router.push(
-      `/homepage/${encodeURIComponent(userID)}/${category.category_id}`
+      `/homepage/${encodeURIComponent(userID)}/category/${category.category_id}`
     );
   }
   return (

@@ -1,0 +1,9 @@
+.category_product_container {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 20px;
+  margin-top: 20px;
+}
+.category_page {
+  margin-top: 100px;
+}

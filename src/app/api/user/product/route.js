@@ -119,3 +119,34 @@ export async function DELETE(req) {
     });
   });
 }
+
+// Update totalLike
+export async function PUT(req) {
+  const url = new URL(req.url);
+  const searchParams = new URLSearchParams(url.searchParams);
+  const product_id = searchParams.get("product_id");
+  return new Promise((resolve, reject) => {
+    if (product_id) {
+      const sqlGetLikes = `SELECT COUNT(User_ID) as Likes FROM PRODUCT_LIKED WHERE Product_ID = ${product_id};`;
+      db.query(sqlGetLikes, (err, result) => {
+        if (err) {
+          console.log(err);
+          reject(err);
+        } else {
+          const totalLikes = result[0].Likes;
+          const sqlUpdate = `UPDATE PRODUCT SET totalLike = ${totalLikes} WHERE Product_ID = ${product_id};`;
+          db.query(sqlUpdate, (err, result) => {
+            if (err) {
+              console.log(err);
+              reject(err);
+            } else {
+              resolve(NextResponse.json({ message: "Total likes updated" }));
+            }
+          });
+        }
+      });
+    } else {
+      reject(new Error("Product ID is undefined"));
+    }
+  });
+}

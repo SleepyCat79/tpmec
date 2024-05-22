@@ -46,16 +46,44 @@ export default function CheckoutPage({ params }) {
         console.error("Error reading files:", error);
       });
   };
+  const checkAndGenerateFileName = async (s3, bucket, originalName) => {
+    let baseName = originalName.split(".").slice(0, -1).join(".");
+    let extension = originalName.split(".").pop();
+    let newName = originalName;
+    let counter = 0;
+
+    while (true) {
+      const params = {
+        Bucket: bucket,
+        Prefix: newName,
+      };
+      try {
+        const data = await s3.listObjectsV2(params).promise();
+        if (data.Contents.length > 0) {
+          // If file exists, generate new name
+          newName = `${baseName}${counter}.${extension}`;
+          counter++;
+        } else {
+          // If file does not exist, use this name
+          return newName;
+        }
+      } catch (error) {
+        console.log("AWS Error:", error);
+        // Handle AWS errors
+        throw new Error(`AWS S3 Error: ${error.code}`);
+      }
+    }
+  };
   async function handlecomment() {
     const imageUrls = await Promise.all(
-      selectedFiles.map((file) => {
+      selectedFiles.map(async (file) => {
+        const newName = await checkAndGenerateFileName(s3, "tpms3", file.name);
         const uploadParams = {
-          Bucket: "tpms3", // replace with your bucket name
-          Key: file.name, // file name to use for S3 object
+          Bucket: "tpms3",
+          Key: newName,
           Body: file,
-          ACL: "public-read", // if you want the file to be publicly accessible
+          ACL: "public-read",
         };
-
         return s3
           .upload(uploadParams)
           .promise()

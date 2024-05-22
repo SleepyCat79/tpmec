@@ -23,6 +23,18 @@ export default function Page({ params }) {
     "5.jpg",
     "6.jpg",
   ]; // replace with your actual image sources
+  const categories = [
+    "野菜",
+    "果物",
+    "米・穀類",
+    "お茶",
+    "魚介類",
+    "肉",
+    "卵・乳",
+    "蜂蜜",
+    "加工食品",
+    "花・観葉植物",
+  ];
 
   const [bestSellerProducts, setBestSellerProducts] = useState([]);
   const [currentImage, setCurrentImage] = useState(0);
@@ -49,6 +61,7 @@ export default function Page({ params }) {
       .then((response) => response.json())
       .then((data) => {
         // transform the data into the format you need
+        console.log(data);
 
         const transformedData = data.map((item) => ({
           productImg: item.First_Image,
@@ -59,8 +72,10 @@ export default function Page({ params }) {
           price: item.First_Option_Price,
           unit: "1袋1kg", // replace with actual data if available
           product_id: item.Product_ID,
+          category_id: item.Category_ID,
           isDiscount: false, // replace with actual data if available
           percentage: 0, // replace with actual data if available
+          totalLikes: item.totalLike,
         }));
 
         setBestSellerProducts(transformedData);
@@ -90,23 +105,6 @@ export default function Page({ params }) {
     percentage: 50,
   });
 
-  const scrollLeft = (ref) => {
-    if (ref.current) {
-      ref.current.scrollTo({
-        left: ref.current.scrollLeft - 400, // adjust this as needed
-        behavior: "smooth",
-      });
-    }
-  };
-
-  const scrollRight = (ref) => {
-    if (ref.current) {
-      ref.current.scrollTo({
-        left: ref.current.scrollLeft + 400, // adjust this as needed
-        behavior: "smooth",
-      });
-    }
-  };
   const scrollLeftAd = () => {
     console.log("scroll left");
     if (advetisementListRef.current) {
@@ -127,55 +125,6 @@ export default function Page({ params }) {
   };
   return (
     <div className="homepage_container">
-      <div className="category_container">
-        <p className="category_title">Category</p>
-        <div className="category_list">
-          <CategoryCart
-            category={{ img: "/1.webp", name: "野菜", category_id: 1 }} // Vegetables
-            userID={user_id}
-          />
-          <CategoryCart
-            category={{ img: "/2.webp", name: "果物", category_id: 2 }} // Fruits
-            userID={user_id}
-          />
-          <CategoryCart
-            category={{ img: "/3.webp", name: "米・穀類", category_id: 3 }} // Rice & Grains
-            userID={user_id}
-          />
-          <CategoryCart
-            category={{ img: "/4.webp", name: "お茶", category_id: 4 }} // Tea
-            userID={user_id}
-          />
-          <CategoryCart
-            category={{ img: "/5.webp", name: "魚介類", category_id: 5 }} // Seafood
-            userID={user_id}
-          />
-          <CategoryCart
-            category={{ img: "/6.webp", name: "肉", category_id: 6 }} // Meat
-            userID={user_id}
-          />
-          <CategoryCart
-            category={{ img: "/7.webp", name: "卵・乳", category_id: 7 }} // Eggs & Dairy
-            userID={user_id}
-          />
-          <CategoryCart
-            category={{ img: "/8.webp", name: "蜂蜜", category_id: 8 }} // Honey
-            userID={user_id}
-          />
-          <CategoryCart
-            category={{ img: "/9.webp", name: "加工食品", category_id: 9 }} // Processed Foods
-            userID={user_id}
-          />
-          <CategoryCart
-            category={{
-              img: "/10.webp",
-              name: "花・観葉植物",
-              category_id: 10,
-            }} // Flowers & Ornamental Plants
-            userID={user_id}
-          />
-        </div>
-      </div>
       <div className="big_advertisement_container">
         <button onClick={scrollLeftAd}>
           <Image
@@ -204,39 +153,53 @@ export default function Page({ params }) {
         </button>
       </div>
       <div className="best_seller_container">
-        <p className="best_seller_title">ベストセラー</p>
+        <p className="best_seller_title">新製品</p>
         <div className="big_best_seller_container">
-          <button
-            onClick={() => scrollLeft(productBestSellerListRef)}
-            className="scroll_btn"
-          >
-            <Image
-              src="/icon_arr_left.png"
-              alt="left_arrow"
-              width={30}
-              height={50}
-            />
-          </button>
           <div className="product_list" ref={productBestSellerListRef}>
-            {bestSellerProducts.map((product, index) => (
+            {bestSellerProducts.slice(-10).map((product, index) => (
               <Product_cart key={index} product={product} userID={user_id} />
             ))}
           </div>
-          <button
-            onClick={() => {
-              scrollRight(productBestSellerListRef);
-            }}
-            className="scroll_btn"
-          >
-            <Image
-              src="/icon_arr_right.png"
-              alt="left_arrow"
-              width={30}
-              height={50}
-            />
-          </button>
+
+          <button className="morebutton">もっと見る</button>
         </div>
       </div>
+      <div className="best_seller_container">
+        <p className="best_seller_title">人気の商品</p>
+        <div className="big_best_seller_container">
+          <div className="product_list" ref={productBestSellerListRef}>
+            {bestSellerProducts
+              .sort((a, b) => b.totalLike - a.totalLike)
+              .slice(0, 10)
+              .map((product, index) => (
+                <Product_cart key={index} product={product} userID={user_id} />
+              ))}
+          </div>
+
+          <button className="morebutton">もっと見る</button>
+        </div>
+      </div>
+      {categories.map((category, i) => (
+        <div className="best_seller_container" key={i}>
+          <p className="best_seller_title">{category}</p>
+          <div className="big_best_seller_container">
+            <div className="product_list" ref={productBestSellerListRef}>
+              {bestSellerProducts
+                .filter((product) => product.category_id === i + 1)
+                .slice(0, 10)
+                .map((product, index) => (
+                  <Product_cart
+                    key={index}
+                    product={product}
+                    userID={user_id}
+                  />
+                ))}
+            </div>
+
+            <button className="morebutton">もっと見る</button>
+          </div>
+        </div>
+      ))}
       <div className="best_seller_container">
         <p className="best_seller_title">割引商品</p>
         <div className="big_advertisement_container">
@@ -291,6 +254,55 @@ export default function Page({ params }) {
               height={50}
             />
           </button>
+        </div>
+      </div>
+      <div className="category_container">
+        <p className="category_title">Category</p>
+        <div className="category_list">
+          <CategoryCart
+            category={{ img: "/1.webp", name: "野菜", category_id: 1 }} // Vegetables
+            userID={user_id}
+          />
+          <CategoryCart
+            category={{ img: "/2.webp", name: "果物", category_id: 2 }} // Fruits
+            userID={user_id}
+          />
+          <CategoryCart
+            category={{ img: "/3.webp", name: "米・穀類", category_id: 3 }} // Rice & Grains
+            userID={user_id}
+          />
+          <CategoryCart
+            category={{ img: "/4.webp", name: "お茶", category_id: 4 }} // Tea
+            userID={user_id}
+          />
+          <CategoryCart
+            category={{ img: "/5.webp", name: "魚介類", category_id: 5 }} // Seafood
+            userID={user_id}
+          />
+          <CategoryCart
+            category={{ img: "/6.webp", name: "肉", category_id: 6 }} // Meat
+            userID={user_id}
+          />
+          <CategoryCart
+            category={{ img: "/7.webp", name: "卵・乳", category_id: 7 }} // Eggs & Dairy
+            userID={user_id}
+          />
+          <CategoryCart
+            category={{ img: "/8.webp", name: "蜂蜜", category_id: 8 }} // Honey
+            userID={user_id}
+          />
+          <CategoryCart
+            category={{ img: "/9.webp", name: "加工食品", category_id: 9 }} // Processed Foods
+            userID={user_id}
+          />
+          <CategoryCart
+            category={{
+              img: "/10.webp",
+              name: "花・観葉植物",
+              category_id: 10,
+            }} // Flowers & Ornamental Plants
+            userID={user_id}
+          />
         </div>
       </div>
     </div>

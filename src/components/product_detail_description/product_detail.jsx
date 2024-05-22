@@ -72,6 +72,14 @@ export default function Product_detail_description({ user_id, product_id }) {
           ...prevProduct,
           likes: prevProduct.likes + 1,
         })); // Update likes
+
+        // Call the PUT function after the POST request is successful
+        fetch(`/api/user/product?product_id=${product_id}`, {
+          method: "PUT",
+        })
+          .then((response) => response.json())
+          .then((data) => console.log(data))
+          .catch((error) => console.error("Error:", error));
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -96,6 +104,14 @@ export default function Product_detail_description({ user_id, product_id }) {
           ...prevProduct,
           likes: prevProduct.likes - 1,
         })); // Update likes
+
+        // Call the PUT request after the DELETE request is successful
+        fetch(`/api/user/product?product_id=${product_id}`, {
+          method: "PUT",
+        })
+          .then((response) => response.json())
+          .then((data) => console.log(data))
+          .catch((error) => console.error("Error:", error));
       })
       .catch((error) => {
         console.error("Error:", error);
