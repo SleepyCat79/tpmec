@@ -31,8 +31,7 @@ export default function NavbarUser({ userID }) {
 
   function signOutUser() {
     const userPool = new CognitoUserPool(poolData);
-    const cognitoUser = userPool.getCurrentUser();
-
+    setCognitoUser(userPool.getCurrentUser());
     if (cognitoUser != null) {
       cognitoUser.signOut();
       router.push("/sign_in");
@@ -94,7 +93,7 @@ export default function NavbarUser({ userID }) {
   }
   useEffect(() => {
     const userPool = new CognitoUserPool(poolData);
-    const cognitoUser = userPool.getCurrentUser();
+    setCognitoUser(userPool.getCurrentUser());
 
     if (cognitoUser != null) {
       cognitoUser.getSession((err, session) => {
@@ -143,10 +142,10 @@ export default function NavbarUser({ userID }) {
       {!cognitoUser && (
         <div className="right_section_navbar_container2">
           <div>
-            <button>ログイン</button>
+            <button onClick={() => router.push("/sign_in")}>ログイン</button>
           </div>
           <div>
-            <button>新規登録</button>
+            <button onClick={() => router.push("/sign_up_1")}>新規登録</button>
           </div>
         </div>
       )}
