@@ -23,7 +23,25 @@ export async function GET(req) {
             checkout.push(item);
           }
         });
-        resolve(NextResponse.json({ cart, checkout }));
+
+        // Group items by Seller_ID
+        const groupedCart = Object.values(
+          cart.reduce((acc, item) => {
+            (acc[item.Seller_ID] = acc[item.Seller_ID] || []).push(item);
+            return acc;
+          }, {})
+        );
+
+        const groupedCheckout = Object.values(
+          checkout.reduce((acc, item) => {
+            (acc[item.Seller_ID] = acc[item.Seller_ID] || []).push(item);
+            return acc;
+          }, {})
+        );
+
+        resolve(
+          NextResponse.json({ cart: groupedCart, checkout: groupedCheckout })
+        );
       }
     });
   });

@@ -192,53 +192,53 @@ export default function CheckoutPage({ params }) {
           <p>{address}</p>
         </div>
       </div>
-      <div className="field_bar_checkout">
-        <div>
-          <p>Hình ảnh</p>
-          <p>Tên</p>
-        </div>
-        <div>
-          <p>Option</p>
-          <p>Don gia</p>
-          <p>So luong</p>
-          <p>Thanh tien</p>
-        </div>
-      </div>
-      {orderDetails?.orderItems?.map((order, index) => {
-        return (
-          <div className="product_checkout" key={index}>
-            <div className="product_checkout_left_section">
-              <Image
-                src={order.productDetails.images[0].Image_url}
-                alt="product_img"
-                width={100}
-                height={100}
-              />
-              <div className="product_information_checkout">
-                <p>{order.productDetails.Product_title}</p>
-                <p>
-                  {
-                    order.productDetails.options[order.Option_number]
-                      .Option_name
-                  }
-                </p>
-              </div>
-            </div>
-            <div className="product_checkout_right_section">
-              <div>
-                <p>{order.Original_price} 円</p>
-              </div>
-              <div>
-                <p>{order.Quantity}</p>
-              </div>
-              <div>
-                <p>{order.Final_price} 円</p>
-              </div>
-            </div>
-          </div>
-        );
-      })}
-
+      <table>
+        <thead>
+          <tr>
+            <th style={{ padding: "0 60px" }}>Hình ảnh</th>
+            <th style={{ padding: "0 60px" }}>Tên</th>
+            <th style={{ padding: "0 60px" }}>Option</th>
+            <th style={{ padding: "0 60px" }}>Don gia</th>
+            <th style={{ padding: "0 60px" }}>So luong</th>
+            <th style={{ padding: "0 60px" }}>Thanh tien</th>
+          </tr>
+        </thead>
+        <tbody>
+          {orderDetails?.orderItems?.map((order, index) => (
+            <tr key={index}>
+              <td style={{ padding: "0 60px" }}>
+                <Image
+                  src={order.productDetails.images[0].Image_url}
+                  alt="product_img"
+                  width={100}
+                  height={100}
+                />
+              </td>
+              <td style={{ padding: "0 60px" }}>
+                <div>
+                  <p>{order.productDetails.Product_title}</p>
+                </div>
+              </td>
+              <td style={{ padding: "0 60px" }}>
+                {order.productDetails.options[order.Option_number].Option_name}
+              </td>
+              <td style={{ padding: "0 60px" }}>{order.Original_price} 円</td>
+              <td style={{ padding: "0 60px" }}>{order.Quantity}</td>
+              <td style={{ padding: "0 60px" }}>{order.Final_price} 円</td>
+              {iscomplete === "Complete" && (
+                <td>
+                  <button
+                    onClick={() => openCommentModal(order.Product_ID)}
+                    className="comment_button"
+                  >
+                    Bình luận về sản phẩm này
+                  </button>
+                </td>
+              )}
+            </tr>
+          ))}
+        </tbody>
+      </table>
       <div className="checkout_final_step">
         <div>
           <p>Tong tien hang: </p> <p>{totalPrice} 円</p>

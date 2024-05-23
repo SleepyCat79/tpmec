@@ -8,6 +8,7 @@ export default function Page({ params }) {
   const { user_id_encode } = params;
   const user_id = decodeURIComponent(user_id_encode);
   const [cart, setCart] = useState({ shop: [] });
+
   useEffect(() => {
     async function fetchCart() {
       const response = await fetch(
@@ -16,17 +17,26 @@ export default function Page({ params }) {
       if (response.ok) {
         const data = await response.json();
         console.log(data);
-        const cartShops = data.cart.map((item) => ({
-          sellerId: item.Seller_ID,
-          check: false,
-          product: [
-            {
+        const cartShopsPromises = data.cart.map(async (shop) => {
+          const sellerId = shop[0].Seller_ID;
+          const shopResponse = await fetch(
+            `/api/user/information?user_id=${encodeURIComponent(sellerId)}`
+          );
+          const shopData = await shopResponse.json();
+          console.log(shopData);
+          return {
+            sellerId: sellerId,
+            Shop_name: shopData.user.Shop_name,
+            check: false,
+            product: shop.map((item) => ({
               ...item,
               check: false,
               total: item.Quantity * parseFloat(item.Option_price),
-            },
-          ],
-        }));
+            })),
+          };
+        });
+        const cartShops = await Promise.all(cartShopsPromises);
+        console.log(cartShops);
         setCart({ shop: cartShops });
       } else {
         console.error("Error:", response.statusText);
@@ -314,7 +324,7 @@ export default function Page({ params }) {
                 checked={shop.check}
                 onClick={() => check_shop_item(shopIndex)}
               ></input>
-              <p>{shop.shop_name}</p>
+              <p>{shop.Shop_name}</p>
             </div>
             {shop.product.map((product, productIndex) => {
               return (

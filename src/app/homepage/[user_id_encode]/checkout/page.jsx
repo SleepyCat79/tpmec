@@ -27,25 +27,27 @@ export default function CheckoutPage({ params }) {
       if (response.ok) {
         const data = await response.json();
         console.log(data);
-        const checkoutShops = data.checkout.map((item) => ({
-          shop_id: item.Seller_ID,
-          shop_name: item.Shop_name,
-          product: [
-            {
-              product_id: item.Product_ID,
-              product_name: item.Product_Name,
-              price: item.Option_price,
-              quantity: item.Quantity,
-              Option_number: item.Option_number,
+        const cartShopsPromises = data.checkout.map(async (shop) => {
+          const sellerId = shop[0].Seller_ID;
+          const shopResponse = await fetch(
+            `/api/user/information?user_id=${encodeURIComponent(sellerId)}`
+          );
+          const shopData = await shopResponse.json();
+          console.log(shopData);
+          return {
+            sellerId: sellerId,
+            Shop_name: shopData.user.Shop_name,
+            check: false,
+            product: shop.map((item) => ({
+              ...item,
+              check: false,
               total: item.Quantity * parseFloat(item.Option_price),
-              product_img: item.Image_url,
-              type: item.Product_Type,
-            },
-          ],
-          note: "",
-          delivery_company: item.Delivery_Company,
-        }));
-        setCart({ shop: checkoutShops });
+            })),
+          };
+        });
+        const cartShops = await Promise.all(cartShopsPromises);
+        console.log(cartShops);
+        setCart({ shop: cartShops });
       } else {
         console.error("Error:", response.statusText);
       }
@@ -116,18 +118,18 @@ export default function CheckoutPage({ params }) {
       let Product_list = [];
       shop.product.forEach((product) => {
         Product_list.push({
-          Product_ID: product.product_id,
+          Product_ID: product.Product_ID,
           Option_number: product.Option_number,
-          Quantity: product.quantity,
+          Quantity: product.Quantity,
           Discount_percentage: product.Discount_percentage,
-          Original_price: product.price,
-          Final_price: product.price * product.quantity,
+          Original_price: product.Option_price,
+          Final_price: product.Option_price * product.Quantity,
         });
       });
 
       if (Product_list.length > 0) {
         const data = {
-          Seller_ID: shop.shop_id, // Seller_ID is obtained from the first checked product
+          Seller_ID: shop.sellerId, // Seller_ID is obtained from the first checked product
           Customer_ID: user_id, // Replace with actual Customer_ID
           Address: address, // Replace with actual Address
           Shipping_company: shop.delivery_company, // Replace with actual Shipping_company
@@ -232,22 +234,22 @@ export default function CheckoutPage({ params }) {
                   <div className="product_checkout" key={productIndex}>
                     <div className="product_checkout_left_section">
                       <Image
-                        src={product.product_img}
+                        src={product.Image_url}
                         alt="product_img"
                         width={100}
                         height={100}
                       />
                       <div className="product_information_checkout">
-                        <p>{product.product_name}</p>
-                        <p>{product.type}</p>
+                        <p>{product.Product_title}</p>
+                        <p>{product.Option_name}</p>
                       </div>
                     </div>
                     <div className="product_checkout_right_section">
                       <div>
-                        <p>{product.price} 円</p>
+                        <p>{product.Option_price} 円</p>
                       </div>
                       <div>
-                        <p>{product.quantity}</p>
+                        <p>{product.Quantity}</p>
                       </div>
                       <div>
                         <p>{product.total} 円</p>
