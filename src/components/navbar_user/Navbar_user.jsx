@@ -22,9 +22,8 @@ const poolData = {
 };
 
 export default function NavbarUser({ userID }) {
-  if (userID == "guess") return null;
-
   const [isSeller, setIsSeller] = useState(false);
+  const [cognitoUser, setCognitoUser] = useState(null);
 
   const [user, setUser] = useState({});
   const cognitoidentityserviceprovider =
@@ -141,43 +140,55 @@ export default function NavbarUser({ userID }) {
           />
         </form>
       </div>
-      <div className="right_section_navbar_container">
-        <div>
-          <div className="icon_navbar_container">
-            <Image
-              src="/cart_icon.png"
-              width={25}
-              height={25}
-              alt="cart_icon"
-            />
+      {!cognitoUser && (
+        <div className="right_section_navbar_container2">
+          <div>
+            <button>ログイン</button>
           </div>
-          <p>{user.Total_Quantity ? user.Total_Quantity : "loading.."}</p>
-        </div>
-        <div>
-          <div className="icon_navbar_container">
-            <Image
-              src="/user_icon.png"
-              width={25}
-              height={25}
-              alt="cart_icon"
-            />
+          <div>
+            <button>新規登録</button>
           </div>
-          <p>{user.LName ? user.LName : "loading..."}</p>
         </div>
-        <div>
-          <button
-            className="icon_navbar_container"
-            onClick={handle_show_option}
-          >
-            <Image
-              src="/menu_icon.png"
-              width={20}
-              height={20}
-              alt="cart_icon"
-            />
-          </button>
+      )}
+      {cognitoUser && (
+        <div className="right_section_navbar_container">
+          <div>
+            <div className="icon_navbar_container">
+              <Image
+                src="/cart_icon.png"
+                width={25}
+                height={25}
+                alt="cart_icon"
+              />
+            </div>
+            <p>{user.Total_Quantity ? user.Total_Quantity : "loading.."}</p>
+          </div>
+          <div>
+            <div className="icon_navbar_container">
+              <Image
+                src="/user_icon.png"
+                width={25}
+                height={25}
+                alt="cart_icon"
+              />
+            </div>
+            <p>{user.LName ? user.LName : "loading..."}</p>
+          </div>
+          <div>
+            <button
+              className="icon_navbar_container"
+              onClick={handle_show_option}
+            >
+              <Image
+                src="/menu_icon.png"
+                width={20}
+                height={20}
+                alt="cart_icon"
+              />
+            </button>
+          </div>
         </div>
-      </div>
+      )}
       {show_option && (
         <div className="list_option">
           <Link

@@ -41,7 +41,7 @@ export default function Home() {
   }, []);
 
   const handleShopping = () => {
-    router.push("/homepage/guess");
+    router.push("/homepage/guest");
   };
 
   if (isSignedIn === null) {

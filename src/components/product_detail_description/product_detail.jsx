@@ -57,6 +57,10 @@ export default function Product_detail_description({ user_id, product_id }) {
       });
   }, [product_id]);
   async function handleLikeProduct() {
+    if (user_id == "guest") {
+      router.push("/sign_in");
+      return;
+    }
     fetch("/api/user/product", {
       method: "POST",
       headers: {
@@ -128,6 +132,10 @@ export default function Product_detail_description({ user_id, product_id }) {
     return <div>Loading...</div>;
   }
   async function handleAddToCart() {
+    if (user_id == "guest") {
+      router.push("/sign_in");
+      return;
+    }
     const data = {
       product_id: product_id,
       user_id: user_id,

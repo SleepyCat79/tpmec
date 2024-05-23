@@ -68,6 +68,7 @@ export default function Forgot_Password() {
         onSuccess: function (result) {
           // code verified
           alert("Password has been reset");
+          router.push("/sign_in");
         },
         onFailure: function (err) {
           // error occurred

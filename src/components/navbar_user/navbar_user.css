@@ -101,3 +101,15 @@
   justify-content: center;
   align-items: center;
 }
+.right_section_navbar_container2 {
+  width: 20vw;
+  display: flex;
+  justify-content: space-around;
+  column-gap: 10px;
+}
+.right_section_navbar_container2 button {
+  cursor: pointer;
+  background-color: #fff;
+  border: none;
+  color: rgb(5, 125, 188);
+}
