@@ -57,7 +57,7 @@ export default function Page({ params }) {
     return () => clearInterval(timer); // Clean up on component unmount
   }, []);
   useEffect(() => {
-    fetch("/api/user/products") // replace with your actual API endpoint
+    fetch("/api/user/products", { next: { revalidate: 60 } }) // replace with your actual API endpoint
       .then((response) => response.json())
       .then((data) => {
         // transform the data into the format you need
@@ -83,7 +83,7 @@ export default function Page({ params }) {
       .catch((error) => console.error("Error:", error));
   }, []);
   useEffect(() => {
-    fetch("/api/user/advertisement") // replace with your actual API endpoint
+    fetch("/api/user/advertisement", { next: { revalidate: 60 } }) // replace with your actual API endpoint
       .then((response) => response.json())
       .then((data) => {
         setAdvertisement(data);
