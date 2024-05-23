@@ -3,6 +3,7 @@ import React, { useRef } from "react";
 import AdvertisementCart from "@/components/advertisement_cart/advertisement_cart";
 import Product_cart from "@/components/product_cart/product_cart";
 import CategoryCart from "@/components/category_cart/category_cart";
+import { useRouter } from "next/navigation";
 import "./homepage.css";
 import { useState, useEffect } from "react";
 import Image from "next/image";
@@ -12,6 +13,7 @@ export default function Page({ params }) {
   const productBestSellerListRef = useRef();
   const productSaleListRef = useRef();
   const advetisementListRef = useRef();
+  const router = useRouter();
 
   const user_id = decodeURIComponent(user_id_encode);
   const [advertisements, setAdvertisement] = useState([]);
@@ -196,7 +198,16 @@ export default function Page({ params }) {
                 ))}
             </div>
 
-            <button className="morebutton">もっと見る</button>
+            <button
+              className="morebutton"
+              onClick={() =>
+                router.push(
+                  `/homepage/${encodeURIComponent(user_id)}/category/${i + 1}`
+                )
+              }
+            >
+              もっと見る
+            </button>
           </div>
         </div>
       ))}

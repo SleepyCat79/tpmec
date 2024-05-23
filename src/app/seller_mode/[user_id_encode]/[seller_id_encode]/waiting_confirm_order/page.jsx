@@ -8,6 +8,7 @@ export default function Page({ params }) {
   const route = useRouter();
 
   const { user_id_encode, seller_id_encode } = params;
+
   async function fetchOrders() {
     try {
       const response = await fetch(
@@ -97,9 +98,7 @@ export default function Page({ params }) {
                   <button
                     onClick={() => {
                       route.push(
-                        `/homepage/${encodeURIComponent(
-                          user_id_encode
-                        )}/order_managment/${order.Order_ID}`
+                        `/seller_mode/view_order/${order.Order_ID}/${order.Customer_ID}`
                       );
                     }}
                   >

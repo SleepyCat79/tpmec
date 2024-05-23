@@ -1,7 +1,9 @@
 "use client";
 import "./order_management.css";
+import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 export default function Page({ params }) {
+  const route = useRouter();
   const [order, setOrder] = useState([]);
   const [indexUpdate, setIndexUpdate] = useState(-1);
   const seller_id = params.seller_id_encode;
@@ -174,7 +176,30 @@ export default function Page({ params }) {
                       new Date(item.Expected_delivery_date).toLocaleDateString()
                     )}
                   </td>
-                  <td>
+                  <td
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <button
+                      onClick={() => {
+                        route.push(
+                          `/seller_mode/view_order/${item.Order_ID}/${item.Customer_ID}`
+                        );
+                      }}
+                    >
+                      View
+                    </button>
+                  </td>
+                  <td
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
                     {(item.Status !== "Complete" || indexUpdate === index) && (
                       <button onClick={() => onClick(index)}>
                         {indexUpdate === index ? "Save" : "Edit"}
