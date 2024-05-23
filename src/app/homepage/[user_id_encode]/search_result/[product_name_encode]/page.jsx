@@ -22,12 +22,12 @@ export default function Page({ params }) {
         console.log(data);
         const transformedData = data.map((item) => ({
           productImg: item.First_Image,
-          sellerImg: "/user_icon.png", // replace with actual data if available
+          sellerImg: item.Shop_image, // replace with actual data if available
           sellerName: item.Shop_name, // replace with actual data if available
           productName: item.Product_title,
           location: "北海道日高地方", // replace with actual data if available
           price: item.First_Option_Price,
-          unit: "1袋1kg", // replace with actual data if available
+          unit: "1 Unit", // replace with actual data if available
           product_id: item.Product_ID,
           isDiscount: false, // replace with actual data if available
           percentage: 0, // replace with actual data if available
