@@ -122,11 +122,6 @@ export default function Product_detail_description({ user_id, product_id }) {
       });
   }
 
-  useEffect(() => {
-    console.log(product);
-    console.log(option);
-    console.log(seller);
-  }, [product]);
   if (isLoading) {
     // Add this block
     return <div>Loading...</div>;
@@ -168,7 +163,7 @@ export default function Product_detail_description({ user_id, product_id }) {
       )}`
     );
   }
-  return (
+  return product && seller && option && comments ? (
     <div className="product_detail">
       <p className="product_detail_product_name">{product.Product_title}</p>
       <div className="product_detail_seller">
@@ -330,5 +325,7 @@ export default function Product_detail_description({ user_id, product_id }) {
           ))}
       </div>
     </div>
+  ) : (
+    <div>Loading...</div>
   );
 }
