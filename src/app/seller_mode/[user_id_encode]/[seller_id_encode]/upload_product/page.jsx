@@ -91,7 +91,7 @@ export default function Page({ params }) {
         })
       );
 
-      // Filter out any null URLs (in case of upload errors)
+      // Filter out any null URLs (in case of upload errrs)
       const validImageUrls = imageUrls.filter((url) => url !== null);
       console.log("Image URLs:", validImageUrls);
       const productImageList = validImageUrls.map((url) => ({
