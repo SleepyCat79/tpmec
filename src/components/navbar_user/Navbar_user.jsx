@@ -29,8 +29,12 @@ export default function NavbarUser({ userID }) {
   const cognitoidentityserviceprovider =
     new AWS.CognitoIdentityServiceProvider();
 
+  const [email, setemail] = useState("");
+
+  const [show_option, set_show_option] = useState(false);
+  const [search_input, set_search_input] = useState("");
   const handleClose = () => {
-    setShow_option(false);
+    set_show_option(false);
   };
 
   function signOutUser() {
@@ -72,10 +76,6 @@ export default function NavbarUser({ userID }) {
     }
     fetchUserInformation();
   }, []);
-  const [email, setemail] = useState("");
-
-  const [show_option, set_show_option] = useState(false);
-  const [search_input, set_search_input] = useState("");
 
   function handle_show_option() {
     set_show_option(!show_option);
