@@ -4,7 +4,6 @@ import { CognitoUserPool, CognitoUser } from "amazon-cognito-identity-js";
 import "./navbar_user.css";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-
 import { useState, useEffect } from "react";
 
 import AWS from "aws-sdk";
@@ -26,10 +25,16 @@ export default function NavbarUser({ userID }) {
   const [cognitoUser, setCognitoUser] = useState(null);
 
   const [user, setUser] = useState({});
+  const router = useRouter();
   const cognitoidentityserviceprovider =
     new AWS.CognitoIdentityServiceProvider();
 
+  const handleClose = () => {
+    setShow_option(false);
+  };
+
   function signOutUser() {
+    handleClose();
     const userPool = new CognitoUserPool(poolData);
     setCognitoUser(userPool.getCurrentUser());
     if (cognitoUser != null) {
@@ -68,11 +73,10 @@ export default function NavbarUser({ userID }) {
     fetchUserInformation();
   }, []);
   const [email, setemail] = useState("");
-  const route = useRouter();
 
   const [show_option, set_show_option] = useState(false);
   const [search_input, set_search_input] = useState("");
-  const router = useRouter();
+
   function handle_show_option() {
     set_show_option(!show_option);
   }
@@ -81,6 +85,7 @@ export default function NavbarUser({ userID }) {
     router.push(
       `/seller_mode/${encodeURIComponent(userID)}/register_for_sales_account`
     );
+    handleClose();
     /// else navigate to seller page
     //router.push(`/seller_mode/${encodeURIComponent(userID)}/seller_dashboard`);
   }
@@ -152,14 +157,19 @@ export default function NavbarUser({ userID }) {
       {cognitoUser && (
         <div className="right_section_navbar_container">
           <div>
-            <div className="icon_navbar_container">
+            <button
+              className="icon_navbar_container"
+              onClick={() => {
+                router.push(`/homepage/${encodeURIComponent(userID)}/cart`);
+              }}
+            >
               <Image
                 src="/cart_icon.png"
                 width={25}
                 height={25}
                 alt="cart_icon"
               />
-            </div>
+            </button>
             <p>{user.Total_Quantity ? user.Total_Quantity : "loading.."}</p>
           </div>
           <div>
@@ -192,14 +202,19 @@ export default function NavbarUser({ userID }) {
         <div className="list_option">
           <Link
             href={`/homepage/${encodeURIComponent(userID)}/user_information`}
+            onClick={handleClose}
           >
             User information
           </Link>
-          <Link href={`/homepage/${encodeURIComponent(userID)}/cart`}>
+          <Link
+            href={`/homepage/${encodeURIComponent(userID)}/cart`}
+            onClick={handleClose}
+          >
             Show your cart
           </Link>
           <Link
             href={`/homepage/${encodeURIComponent(userID)}/order_managment`}
+            onClick={handleClose}
           >
             Order management
           </Link>
@@ -207,7 +222,7 @@ export default function NavbarUser({ userID }) {
           {isSeller ? (
             <button
               onClick={() =>
-                route.push(`/seller_mode/${userID}/${userID}/dashboard`)
+                router.push(`/seller_mode/${userID}/${userID}/dashboard`)
               }
             >
               My Shop
