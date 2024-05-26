@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import "./homepage.css";
 import { useState, useEffect } from "react";
 import Image from "next/image";
+export const dynamic = "force-dynamic";
 
 export default function Page({ params }) {
   const { user_id_encode } = params;

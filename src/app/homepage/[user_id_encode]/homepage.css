@@ -38,15 +38,33 @@
   width: 100%;
 }
 .product_list {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  grid-template-rows: repeat(2, 1fr);
-  gap: 10px; /* adjust as needed */
-  overflow-x: scroll;
-  scrollbar-width: none;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: stretch; /* Ensure items are aligned nicely */
   width: 90%;
+  margin: 0 auto; /* Center the list in its container */
+  gap: 20px; /* Spacing between items */
   animation-name: slideTopDown;
   animation-duration: 1s;
+}
+
+.product_list > * {
+  flex: 1 1 200px; /* Flex items grow and shrink from a base of 200px */
+  max-width: calc(
+    50% - 10px
+  ); /* Max two items per row, adjust margin accordingly */
+  display: flex;
+  flex-direction: column; /* Makes it easier to organize content within each product cart */
+  padding: 0px;
+  box-sizing: border-box; /* Include padding and border in the element's total width and height */
+}
+
+@media (max-width: 800px) {
+  .product_list > * {
+    max-width: 100%; /* One item per row on smaller screens */
+  }
 }
 @keyframes slideTopDown {
   0% {
