@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./page.css";
 import AWS from "aws-sdk";
 
@@ -20,6 +20,21 @@ export default function Page({ params }) {
   const [description, setDescription] = useState("");
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [isWaiting, setIsWaiting] = useState(false);
+  const [imageCount, setImageCount] = useState(0);
+  useEffect(() => {
+    fetchImageCount();
+  }, []);
+
+  const fetchImageCount = async () => {
+    try {
+      const response = await fetch("/api/seller/product", { method: "GET" });
+      const data = await response.json();
+      setImageCount(data.count);
+    } catch (error) {
+      console.error("Failed to fetch image count:", error);
+    }
+  };
+
   const options = [
     "野菜",
     "果物",
@@ -33,45 +48,20 @@ export default function Page({ params }) {
     "花・観葉植物",
   ];
   const [selectedOption, setSelectedOption] = useState("1");
-  const checkAndGenerateFileName = async (s3, bucket, originalName) => {
-    let baseName = originalName.split(".").slice(0, -1).join(".");
-    let extension = originalName.split(".").pop();
-    let newName = originalName;
-    let counter = 0;
-
-    while (true) {
-      const params = {
-        Bucket: bucket,
-        Prefix: newName,
-      };
-      try {
-        const data = await s3.listObjectsV2(params).promise();
-        if (data.Contents.length > 0) {
-          // If file exists, generate new name
-          newName = `${baseName}${counter}.${extension}`;
-          counter++;
-        } else {
-          // If file does not exist, use this name
-          return newName;
-        }
-      } catch (error) {
-        console.log("AWS Error:", error);
-        // Handle AWS errors
-        throw new Error(`AWS S3 Error: ${error.code}`);
-      }
-    }
+  const checkAndGenerateFileName = async (s3, bucket, originalName, index) => {
+    let newName = `tpmec${imageCount + index + 1}`;
+    return newName;
   };
   const submitproduct = async (e) => {
     setIsWaiting(true);
-    console.log("Called");
     try {
-      // Upload files to S3 and get their URLs
       const imageUrls = await Promise.all(
-        selectedFiles.map(async (file) => {
+        selectedFiles.map(async (file, index) => {
           const newName = await checkAndGenerateFileName(
             s3,
             "tpms3",
-            file.name
+            file.name,
+            index
           );
           const uploadParams = {
             Bucket: "tpms3",
@@ -91,12 +81,10 @@ export default function Page({ params }) {
         })
       );
 
-      // Filter out any null URLs (in case of upload errrs)
       const validImageUrls = imageUrls.filter((url) => url !== null);
       console.log("Image URLs:", validImageUrls);
-      const productImageList = validImageUrls.map((url) => ({
-        imageURL: url,
-      }));
+
+      const productImageList = validImageUrls.map((url) => ({ imageURL: url }));
       console.log("Product Image List:", productImageList);
       const productOptionList = rows.map(
         ({ optionName, optionPrice, optionQuantity }) => ({

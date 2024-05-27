@@ -126,24 +126,13 @@ export default function CheckoutPage({ params }) {
   }
 
   useEffect(() => {
-    async function fetchUserInformation() {
-      const response = await fetch(
-        `/api/user/information?user_id=${encodeURIComponent(user_id_encode)}`
-      );
-      if (response.ok) {
-        const data = await response.json();
-        setUserInformation({
-          user_name: data.user.FName + " " + data.user.LName,
-          user_phone: data.user.Phone_Number,
-          user_address: data.address.map((item) => item.Address),
-        });
-      } else {
-        console.error("Error:", response.statusText);
-      }
-    }
     fetch(`/api/user/order?order_id=${Order_ID}`)
       .then((response) => response.json())
       .then((data) => {
+        setUserInformation({
+          user_name: data.body.order.Customer_name,
+          user_phone: data.body.order.Customer_phone_number,
+        });
         setIsComplete(data.body.order.Status);
         const orderData = data.body.order;
         setAddress(data.body.order.Address);
@@ -162,11 +151,9 @@ export default function CheckoutPage({ params }) {
             ...orderData,
             orderItems: enrichedOrderData,
           });
-          console.log(enrichedOrderData);
         });
       })
       .catch((error) => console.error(error));
-    fetchUserInformation();
   }, [Order_ID]);
 
   function calculateTotalPrice() {

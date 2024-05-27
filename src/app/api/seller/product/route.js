@@ -88,17 +88,14 @@ export async function POST(req) {
 
 ///Get Product Detail For Seller
 export async function GET(req) {
-  const url = new URL(req.url);
-  const searchParams = new URLSearchParams(url.searchParams);
-  const product_id = searchParams.get("product_id");
-  const sql = `call Get_Product_Detail_For_Seller('${product_id}')`; // every thing about this product
+  const sql = `SELECT COUNT(*) AS image_count FROM PRODUCT_IMAGE`;
   return new Promise((resolve, reject) => {
     db.query(sql, (err, result) => {
       if (err) {
         console.log(err);
-        resolve(NextResponse.error(err));
+        reject(NextResponse.error(err));
       } else {
-        resolve(NextResponse.json(result[0]));
+        resolve(NextResponse.json({ count: result[0].image_count }));
       }
     });
   });
@@ -140,6 +137,19 @@ export async function PUT(req) {
             message: "Product updated successfully",
           })
         );
+      }
+    });
+  });
+}
+export async function COUNTIMAGES(req) {
+  const sql = `SELECT COUNT(*) AS image_count FROM Product_Image`;
+  return new Promise((resolve, reject) => {
+    db.query(sql, (err, result) => {
+      if (err) {
+        console.log(err);
+        reject(NextResponse.error(err));
+      } else {
+        resolve(NextResponse.json({ count: result[0].image_count }));
       }
     });
   });

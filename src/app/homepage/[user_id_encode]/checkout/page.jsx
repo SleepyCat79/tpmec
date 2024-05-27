@@ -10,6 +10,8 @@ export default function CheckoutPage({ params }) {
   const user_id_encode = params.user_id_encode;
   const user_id = decodeURIComponent(user_id_encode);
   const [isEditing, setIsEditing] = useState(false);
+  const [isEditingAddress, setIsEditingAddress] = useState(false);
+
   const [address, setAddress] = useState("");
 
   const [user_information, setUserInformation] = useState({
@@ -109,6 +111,13 @@ export default function CheckoutPage({ params }) {
     }
     return total;
   }
+
+  const handleUserInfoChange = (key, value) => {
+    setUserInformation((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+  };
   const totalPrice = calculateTotalPrice();
   async function handle_checkout() {
     let new_cart = { ...cart };
@@ -135,7 +144,10 @@ export default function CheckoutPage({ params }) {
           Shipping_company: shop.delivery_company, // Replace with actual Shipping_company
           Total_quantity: Product_list.length,
           Product_list,
+          Customer_name: user_information.user_name,
+          Customer_phone_number: user_information.user_phone,
         };
+        console.log(data);
 
         // Make API request to server
         const response = await fetch("/api/user/order", {
@@ -187,28 +199,66 @@ export default function CheckoutPage({ params }) {
           <p>Dia chi nhan hang</p>
         </div>
         <div className="information_address_checkout">
-          <p>
-            {user_information.user_name} {user_information.user_phone}
-          </p>
           {isEditing ? (
-            <select
-              value={address}
-              onChange={(e) => {
-                setAddress(e.target.value);
-              }}
-            >
-              {user_information.user_address.map((address, index) => (
-                <option key={index} value={address}>
-                  {address}
-                </option>
-              ))}
-            </select>
+            <>
+              <input
+                type="text"
+                value={user_information.user_name}
+                onChange={(e) =>
+                  handleUserInfoChange("user_name", e.target.value)
+                }
+                placeholder="Ho va ten"
+              />
+              <input
+                type="text"
+                value={user_information.user_phone}
+                onChange={(e) =>
+                  handleUserInfoChange("user_phone", e.target.value)
+                }
+                placeholder="So dien thoai"
+              />
+              {isEditingAddress ? (
+                <input
+                  type="text"
+                  value={address}
+                  style={{ width: "350px" }}
+                  onChange={(e) => setAddress(e.target.value)}
+                />
+              ) : (
+                <select
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                >
+                  {user_information.user_address.map((address, index) => (
+                    <option key={index} value={address}>
+                      {address}
+                    </option>
+                  ))}
+                </select>
+              )}
+              <Image
+                src="/edit_user_in4.png"
+                alt="Edit"
+                width={20}
+                height={20}
+                onClick={() => setIsEditingAddress(!isEditingAddress)}
+                style={{ cursor: "pointer" }}
+              />
+            </>
           ) : (
-            <p>{address}</p>
+            <>
+              <p>
+                {user_information.user_name} {user_information.user_phone}
+              </p>
+              <p>{address}</p>
+            </>
           )}
           <button onClick={() => setIsEditing(!isEditing)}>
             {isEditing ? "Xong" : "Thay doi"}
           </button>
+          {isEditing && (
+            <button onClick={() => setIsEditing(false)}>Huy</button>
+          )}
         </div>
       </div>
       <div className="field_bar_checkout">

@@ -179,11 +179,25 @@ export default function Page({ params }) {
             ))}
           </div>
 
-          <button className="morebutton">もっと見る</button>
+          <button
+            onClick={() =>
+              router.push(`/homepage/${encodeURIComponent(user_id)}/products`)
+            }
+            className="morebutton"
+          >
+            もっと見る{" "}
+          </button>
         </div>
       </div>
       <div className="best_seller_container">
-        <p className="best_seller_title">人気の商品</p>
+        <p
+          className="best_seller_title"
+          onClick={() =>
+            router.push(`/homepage/${encodeURIComponent(user_id)}/products`)
+          }
+        >
+          人気の商品
+        </p>
         <div className="big_best_seller_container">
           <div className="product_list" ref={productBestSellerListRef}>
             {bestSellerProducts

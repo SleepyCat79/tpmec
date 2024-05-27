@@ -45,9 +45,11 @@ export async function POST(req) {
     Shipping_company,
     Total_quantity,
     Product_list,
+    Customer_name,
+    Customer_phone_number,
   } = data;
   const Order_date = new Date().toISOString().slice(0, 19).replace("T", " ");
-  const sql = `call createOrder('${Seller_ID}', '${Customer_ID}', '${Address}', '${Shipping_company}', '${Total_quantity}','${Order_date}')`;
+  const sql = `call createOrder('${Seller_ID}', '${Customer_ID}', '${Address}', '${Shipping_company}', '${Total_quantity}','${Order_date}', '${Customer_name}', '${Customer_phone_number}')`;
   const sql2 = "call createOrderDetails(?,?,?,?,?,?)"; // Order_ID,Product_ID,Option_number,Quantity,Discount_percentage,Original_price
   return new Promise((resolve, reject) => {
     db.query(sql, async (err, result) => {
