@@ -60,7 +60,14 @@ export default function Page({ params }) {
     return () => clearInterval(timer); // Clean up on component unmount
   }, []);
   useEffect(() => {
-    fetch("/api/user/products", { next: { revalidate: 60 } }) // replace with your actual API endpoint
+    fetch("/api/user/products", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        dynamic: "force-dynamic",
+      },
+      next: { revalidate: 60 },
+    })
       .then((response) => response.json())
       .then((data) => {
         // transform the data into the format you need
@@ -68,16 +75,16 @@ export default function Page({ params }) {
 
         const transformedData = data.map((item) => ({
           productImg: item.First_Image,
-          sellerImg: item.Shop_image, // replace with actual data if available
-          sellerName: item.Shop_name, // replace with actual data if available
+          sellerImg: item.Shop_image,
+          sellerName: item.Shop_name,
           productName: item.Product_title,
-          location: "北海道日高地方", // replace with actual data if available
+          location: "北海道日高地方",
           price: item.First_Option_Price,
-          unit: "1袋1kg", // replace with actual data if available
+          unit: "1袋1kg",
           product_id: item.Product_ID,
           category_id: item.Category_ID,
-          isDiscount: false, // replace with actual data if available
-          percentage: 0, // replace with actual data if available
+          isDiscount: false,
+          percentage: 0,
           totalLikes: item.totalLike,
         }));
 
@@ -85,8 +92,16 @@ export default function Page({ params }) {
       })
       .catch((error) => console.error("Error:", error));
   }, []);
+
   useEffect(() => {
-    fetch("/api/user/advertisement", { next: { revalidate: 60 } }) // replace with your actual API endpoint
+    fetch("/api/user/advertisement", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        dynamic: "force-dynamic",
+      },
+      next: { revalidate: 60 },
+    })
       .then((response) => response.json())
       .then((data) => {
         setAdvertisement(data);
