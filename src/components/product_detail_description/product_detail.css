@@ -210,3 +210,14 @@
   font-size: 12px;
   color: #6c757d;
 }
+
+.btn_like_product_detail {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  border-radius: 10px;
+  transition: ease-in-out 0.3s;
+}
+.btn_like_product_detail:hover {
+  background-color: #ced4da;
+}

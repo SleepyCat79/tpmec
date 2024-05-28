@@ -83,6 +83,7 @@
 }
 .best_seller_title {
   font-size: xx-large;
+  margin-bottom: 0px;
 }
 .category_container {
   display: flex;
@@ -117,4 +118,8 @@
   cursor: pointer;
   transition: opacity 0.4s cubic-bezier(0.645, 0.045, 0.355, 1) 0s;
   display: inline-flex;
+}
+.morebutton:hover {
+  background-color: rgb(5, 125, 188);
+  color: rgb(255, 255, 255);
 }

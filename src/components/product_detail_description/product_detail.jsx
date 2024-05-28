@@ -228,7 +228,10 @@ export default function Product_detail_description({ user_id, product_id }) {
         <p style={{ right: "40px", position: "relative", fontWeight: "bold" }}>
           Total like : {product.likes}
         </p>
-        <button onClick={liked ? unlikedProduct : handleLikeProduct}>
+        <button
+          className="btn_like_product_detail"
+          onClick={liked ? unlikedProduct : handleLikeProduct}
+        >
           <Image
             src={liked ? "/heart_liked.png" : "/heart.png"}
             width={30}

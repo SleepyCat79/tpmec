@@ -202,15 +202,23 @@ export default function NavbarUser({ userID }) {
             <p>{numliked ? numliked : "loading.."}</p>
           </div>
           <div>
-            <div className="icon_navbar_container">
-              <Image
-                src="/user_icon.png"
-                width={25}
-                height={25}
-                alt="cart_icon"
-              />
-            </div>
-
+            <button
+              className="icon_navbar_container"
+              onClick={() => {
+                router.push(
+                  `/homepage/${encodeURIComponent(userID)}/like_product`
+                );
+              }}
+            >
+              <div className="icon_navbar_container">
+                <Image
+                  src="/user_icon.png"
+                  width={25}
+                  height={25}
+                  alt="cart_icon"
+                />
+              </div>
+            </button>
             <p>{user.LName ? user.LName : "loading..."}</p>
           </div>
           <div>
@@ -234,21 +242,20 @@ export default function NavbarUser({ userID }) {
             href={`/homepage/${encodeURIComponent(userID)}/user_information`}
             onClick={handleClose}
           >
-            User information
+            ユーザー情報
           </Link>
           <Link
             href={`/homepage/${encodeURIComponent(userID)}/cart`}
             onClick={handleClose}
           >
-            Show your cart
+            あなたのカート
           </Link>
           <Link
             href={`/homepage/${encodeURIComponent(userID)}/order_managment`}
             onClick={handleClose}
           >
-            Order management
+            注文管理
           </Link>
-          return (
           {isSeller ? (
             <button
               onClick={() =>
@@ -260,7 +267,7 @@ export default function NavbarUser({ userID }) {
           ) : (
             <button onClick={register_as_seller}>Register as seller</button>
           )}
-          ); <button onClick={signOutUser}>Log out</button>{" "}
+          <button onClick={signOutUser}>ログアウト</button>{" "}
         </div>
       )}
     </div>

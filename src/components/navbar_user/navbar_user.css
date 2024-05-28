@@ -75,20 +75,33 @@
   flex-direction: column;
   position: fixed;
   right: 10px;
-  top: 70px;
+  top: 60px;
   padding: 10px;
-  background-color: black;
-  border-radius: 8px;
+  background-color: white;
+  border-radius: 4px;
+  border: 1px solid #38b000;
 }
 .list_option a {
-  color: white;
+  color: black;
   text-decoration: none;
   margin: 5px 0;
-  transition: ease-in 1s;
+  transition: ease-in 0.2s;
 }
 .list_option a:hover {
-  color: #f6f6f6;
   text-decoration: underline;
+  color: #38b000;
+}
+.list_option button {
+  margin-top: 5px;
+  background-color: transparent;
+  border: 1px solid #38b000;
+  color: #38b000;
+  cursor: pointer;
+  transition: ease-in 0.2s;
+}
+.list_option button:hover {
+  background-color: #38b000;
+  color: white;
 }
 .left_section_navbar_container button {
   cursor: pointer;
@@ -112,4 +125,26 @@
   background-color: #fff;
   border: none;
   color: rgb(5, 125, 188);
+}
+
+.navbar_user_container button {
+  display: inline-block;
+  position: relative;
+  transition: all 0.3s ease-in-out;
+  /* Add your other button styles here */
+}
+
+.navbar_user_container button::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: #000; /* Change this to your desired border color */
+  transition: width 0.3s;
+}
+
+.navbar_user_container button:hover::after {
+  width: 100%;
 }
