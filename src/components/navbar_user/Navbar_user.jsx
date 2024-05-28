@@ -30,6 +30,7 @@ export default function NavbarUser({ userID }) {
     new AWS.CognitoIdentityServiceProvider();
 
   const [email, setemail] = useState("");
+  const [numliked, setnumliked] = useState(0);
 
   const [show_option, set_show_option] = useState(false);
   const [search_input, set_search_input] = useState("");
@@ -74,7 +75,17 @@ export default function NavbarUser({ userID }) {
         console.log(data.user);
       }
     }
+    async function fetchlikedproduct() {
+      const response = await fetch(
+        `/api/user/product_like?user_id=${encodeURIComponent(userID)}`
+      );
+      if (response.ok) {
+        const data = await response.json();
+        setnumliked(data.productCount);
+      }
+    }
     fetchUserInformation();
+    fetchlikedproduct();
   }, []);
 
   function handle_show_option() {
@@ -173,6 +184,24 @@ export default function NavbarUser({ userID }) {
             <p>{user.Total_Quantity ? user.Total_Quantity : "loading.."}</p>
           </div>
           <div>
+            <button
+              className="icon_navbar_container"
+              onClick={() => {
+                router.push(
+                  `/homepage/${encodeURIComponent(userID)}/like_product`
+                );
+              }}
+            >
+              <Image
+                src="/heart_nav.png"
+                width={25}
+                height={25}
+                alt="cart_icon"
+              />
+            </button>
+            <p>{numliked ? numliked : "loading.."}</p>
+          </div>
+          <div>
             <div className="icon_navbar_container">
               <Image
                 src="/user_icon.png"
@@ -181,6 +210,7 @@ export default function NavbarUser({ userID }) {
                 alt="cart_icon"
               />
             </div>
+
             <p>{user.LName ? user.LName : "loading..."}</p>
           </div>
           <div>

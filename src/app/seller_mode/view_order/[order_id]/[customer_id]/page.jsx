@@ -16,7 +16,11 @@ export default function CheckoutPage({ params }) {
   const [seller_id, setSellerID] = useState("");
 
   const [orderDetails, setOrderDetails] = useState(null);
-
+  const [user_information, setUserInformation] = useState({
+    user_name: "",
+    user_phone: "",
+    user_address: [],
+  });
   const [address, setAddress] = useState("");
   const [note, setNote] = useState(
     "The padding property in CSS does not accept auto as a value. It only accepts length values (like px, em, rem, etc.) or percentages. If you want to center the content within the div, you might want to use margin: auto instead, along with a specified width."
@@ -26,7 +30,10 @@ export default function CheckoutPage({ params }) {
     fetch(`/api/user/order?order_id=${Order_ID}`)
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
+        setUserInformation({
+          user_name: data.body.order.Customer_name,
+          user_phone: data.body.order.Customer_phone_number,
+        });
         const orderData = data.body.order;
         setSellerID(data.body.order.Seller_ID);
         setAddress(data.body.order.Address);
@@ -76,6 +83,9 @@ export default function CheckoutPage({ params }) {
           <p>Dia chi nhan hang</p>
         </div>
         <div className="information_address_checkout">
+          <p>
+            {user_information.user_name} {user_information.user_phone}
+          </p>
           <p>{address}</p>
         </div>
       </div>
