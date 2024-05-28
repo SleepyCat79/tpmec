@@ -46,7 +46,7 @@ export default function Page({ params }) {
     indexOfFirstProduct,
     indexOfLastProduct
   );
-
+  //hey
   const totalPages = Math.ceil(products.length / productsPerPage);
 
   const renderPageNumbers = () => {
